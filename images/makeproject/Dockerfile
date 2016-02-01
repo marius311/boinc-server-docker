@@ -36,11 +36,11 @@ RUN ./make_project --url_base http://www.boincserver.com \
                    --db_user root \
                    --no_db \
                    --no_query \
-                   boincserver
-RUN sed -i -e 's/Deny from all/Require all denied/g' \
+                   boincserver \
+    && sed -i -e 's/Deny from all/Require all denied/g' \
            -e 's/Allow from all/Require all granted/g' \
-           -e '/Order/d' $PROJHOME/boincserver.httpd.conf
-RUN echo "admin:zJiQQ3OoIfehM" > $PROJHOME/html/ops/.htpasswd
+           -e '/Order/d' $PROJHOME/boincserver.httpd.conf \
+    && echo "admin:zJiQQ3OoIfehM" > $PROJHOME/html/ops/.htpasswd
 
 # install boinc2docker
 COPY boinc2docker $PROJHOME/boinc2docker
@@ -53,4 +53,5 @@ RUN mkdir $PROJHOME/html/stats_archive
 COPY project.xml boinc2docker/plan_class_spec.xml db_dump_spec.xml $PROJHOME/
 
 # finish up 
+RUN unlink /root/projects
 COPY postbuild.py /root/
