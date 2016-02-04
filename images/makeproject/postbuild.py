@@ -22,6 +22,7 @@ for x in ['html', 'html/cache', 'upload', 'log_boincserver']:
 if not '--copy-only' in sys.argv:
     
     print "Creating database..."
+    waited=False
     while True:
         try:
             database.create_database(
@@ -37,13 +38,17 @@ if not '--copy-only' in sys.argv:
                 raise
         except _mysql_exceptions.OperationalError as e:
             if e[0]==2003:  
-                print "Waiting for mysql server..."
+                if waited: sys.stdout.write('.'); sys.stdout.flush()
+                else: 
+                    sys.stdout.write("Waiting for mysql server to be up..."); sys.stdout.flush()
+                    waited=True
                 sleep(1)
             else: 
                 raise
         else:
             sh('cd /root/projects/boincserver/html/ops; ./db_schemaversion.php > /root/projects/boincserver/db_revision')
             break
+    if waited: sys.stdout.write('\n')
 
 
     print "Running BOINC update scripts..."
