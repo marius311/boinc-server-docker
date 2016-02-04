@@ -45,7 +45,7 @@ RUN ./make_project --url_base http://www.boincserver.com \
 # install boinc2docker
 COPY boinc2docker $PROJHOME/boinc2docker
 RUN cd $PROJHOME/boinc2docker \
-    && ISOTAG=v0.43 VBOXTAG=v0.6 ./setup_versions \
+    && ISOTAG=v0.44 VBOXTAG=v0.6 ./setup_versions \
     && ./install_as $PROJHOME boinc2docker 1.00
 
 # project files
