@@ -1,4 +1,4 @@
-FROM php:5.6.10-apache
+FROM php:5.6.17-apache
 
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
 
