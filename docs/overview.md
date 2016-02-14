@@ -22,15 +22,13 @@ Three named volumes store server files,
 Creation and management of the containers is done with docker-compose and the configuration file at [/docker-compose.yml](/docker-compose.yml). There is also a [Makefile](/Makefile) which is just shorthand for some of the docker-compose commands. To run the server, once you've built or pulled the images, 
 
 * `make up-mysql` - Start the mysql container
-* `make post-makeproject` - When the `boincserver_makeproject` image is built, it compiles the BOINC source code, runs BOINC's `./make_project` script to create the BOINC project folder structure, and copies in our various application files. There are three things we need to do to fully build the server which we can't do in this step because Docker doesn't allow linking containers or mounting volumes during the build step,
-    * We need to copy files into the `boincserver_project` volume
-    * We need to create the database (if it doesn't exist)
-    * We need to update the database with any new applications we added (i.e. BOINC's `bin/update_versions` script) So there is a small script [postbuild.py](/images/makeproject/postbuild.py) which does these things outside of the Docker build phase which can be run with `make post-makeproject`.
+* `make post-makeproject` - When the `boincserver_makeproject` image is built, it compiles the BOINC source code, runs BOINC's `./make_project` script to create the BOINC project folder structure, and copies in our various application files. There are three things we need to do to fully build the server which we can't do in this step because Docker doesn't allow linking containers or mounting volumes during the build step. These are performed by `make post-makeproject` which runs small script [postbuild.py](/images/makeproject/postbuild.py) which,
+    * Copies files into the `boincserver_project` volume
+    * Crates the database (if it doesn't exist)
+    * Updates the database with any new applications we added (i.e. BOINC's `bin/update_versions` script) 
 * `make up-apache` - Start the Apache server 
 
 The command `make up` is equivalent to `make up-mysql post-makeproject up-apache`. 
 
-The workflow is intended to be that when you modify some project files, you then rerun `make makeproject post-makeproject` which rebuilds the `boincserver_makeproject` image and reruns the `postbuild.py` script, overwriting existing files in your project directory while leaving existing ones (like upload and download files) there. 
-
-`make exec-apache` gets you a shell inside the Apache container to perform maintenance or submit new jobs. 
+The `make exec-apache` command gets you a shell inside the Apache container to perform maintenance or submit new jobs. 
 

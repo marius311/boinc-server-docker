@@ -59,3 +59,7 @@ with
 ```
 
 assuming you've put the `makeproject` Dockerfile in the `images/makeproject` folder. If you don't need to modify other images, e.g. the mysql image, you can just leave those part as is.
+
+### Workflow
+
+The idea is that when you modify some project files, you then rerun `make makeproject post-makeproject` which rebuilds the `boincserver_makeproject` image and reruns the `postbuild.py` script, overwriting existing files in your project directory while leaving existing ones (like upload and download files) there. 
