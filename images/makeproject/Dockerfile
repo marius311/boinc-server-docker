@@ -54,4 +54,5 @@ COPY project.xml boinc2docker/plan_class_spec.xml db_dump_spec.xml $PROJHOME/
 
 # finish up 
 RUN unlink /root/projects
+ONBUILD RUN ln -s /root/projects.build /root/projects
 COPY postbuild.py /root/

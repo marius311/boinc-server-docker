@@ -38,4 +38,9 @@ Customizing the server
 
 This package is not just a way to get a simple empty test server up and running, its also the best way to actually run your server (for example, this is how the [Cosmology@Home](www.cosmologyathome.org) server runs). By running your server in production with `boinc-server-docker`, you can transparently go from development to deployment with the assurance your code will work exactly the same, you can version control your entire server, and you can easily stay up to date with the latest BOINC/Apache/mysql releases.
 
-TODO: instructions on how to customize the web page, add your own apps, add you own signing keys, etc...
+For instructions on how to do this, see [example_project.md](/docs/example_project.md).
+
+Contributing
+------------
+
+See [overview.md](/docs/overview.md) and [TODO.md](/docs/TODO.md) and please contact [me](https://github.com/marius311)!
