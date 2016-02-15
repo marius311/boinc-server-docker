@@ -4,3 +4,6 @@
 [submodule "images/makeproject/boinc"]
 	path = images/makeproject/boinc
 	url = https://github.com/boinc/boinc.git
+[submodule "images/makeproject/html/inc/phpmailer"]
+	path = images/makeproject/html/inc/phpmailer
+	url = https://github.com/PHPMailer/PHPMailer.git
