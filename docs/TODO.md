@@ -21,7 +21,13 @@ vboxwrapper logs the output from the "vboxmonitor" program but the way its coded
 
 This doesn't work on Docker 1.10+ b/c the image format changed (https://github.com/jwilder/docker-squash/issues/45). This is a pretty important piece of the puzzle since its important we squash images since volunteer internet connections are not great. The task would be to either patch docker-squash to work with 1.10 (lots of people outside of BOINC might find that useful, btw), or for now package up docker-squash in a Docker-inside-Docker container running 1.9 (actually I'm not sure that would work, but to be looked into). 
 
-#### 6. Add an SMTP server to boinc-server-docker 
+#### 6. Do Docker pulls via BOINC's file transfer system
+
+The docker pull command happens inside the running container, which can fail due to Virtualbox networking issues or user
+s internet problems, and also means no computation is done during this part. (The failed pulls are the #1 cause of computation errors we see, btw, about ~5% of all jobs fail this way). So we should make the pull use BOINC's actual transfer system, which also gives the user a nice download progress bar to let them know that's what's happening, will auto retry, and will allow other computation to happen during this time. True integration is difficult / impossible, but I bet something simple can be done, where when we `boinc2docker_create_work <image>` on the server, the server downloads the `<image>` and exports it and creates a BOINC "input file", creates the job with this file, then on the user side this file is imported into the Docker daemon inside the container. Not sure if its possible to do this at per-layer level. At the very least we should separate the base image (probably debian or whatever) and the remainder, which is probably good anyway since we usually squash all the top layers anyway.  
+
+
+#### 7. Add an SMTP server to boinc-server-docker 
 
 BOINC needs an SMTP server, it'd be nice if this were part of boinc-server-docker (https://github.com/marius311/boinc/blob/cosmohome/html/project.sample/project.inc#L37). 
 
