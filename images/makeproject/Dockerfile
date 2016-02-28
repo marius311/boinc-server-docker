@@ -27,7 +27,7 @@ RUN cd /root/boinc && ./_autosetup && ./configure --disable-client --disable-man
 # get boinc2docker
 COPY boinc2docker /root/boinc2docker
 RUN cd /root/boinc2docker \
-    && ISOTAG=v0.44 VBOXTAG=v0.6 ./setup_versions
+    && ISOTAG=v0.44 VBOXTAG=v0.7 ./setup_versions
 
 # build configuration
 ENV USER=root PROJHOME=/project
