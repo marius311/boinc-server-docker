@@ -22,8 +22,7 @@ RUN apt-get update && apt-get install -y \
 
 #get source and compile server
 COPY boinc /root/boinc
-WORKDIR /root/boinc
-RUN ./_autosetup && ./configure --disable-client --disable-manager && make
+RUN cd /root/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
 
 #make project
 RUN mkdir -p /root/projects.build && ln -s /root/projects.build /root/projects
