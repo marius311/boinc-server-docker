@@ -25,7 +25,7 @@ services:
     links: 
      - mysql
     volumes:
-     - "project:/root/projects"
+     - "project:/project"
 
   apache:
     image: marius311/boincserver_apache:latest
@@ -36,8 +36,8 @@ services:
     links:
      - mysql
     volumes: 
-     - "project:/root/projects"
-     - "results:/root/results"
+     - "project:/project"
+     - "results:/results"
     ports: 
      - "80:80"
     tty: true

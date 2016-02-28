@@ -24,10 +24,10 @@ RUN adduser www-data root
 COPY .bashrc /root/.bashrc
 RUN echo "umask 0002" >> /etc/apache2/envvars
 
-#convenient when exec'ing in
-WORKDIR /root/projects/boincserver
-
-RUN ln -s /root/projects/boincserver/boincserver.httpd.conf /etc/apache2/sites-enabled/boincserver.httpd.conf 
+#build configuration
+ENV PROJHOME=/project
+RUN ln -s $PROJHOME/boincserver.httpd.conf /etc/apache2/sites-enabled/boincserver.httpd.conf 
+WORKDIR $PROJHOME
 
 #set up supervisor to run
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf

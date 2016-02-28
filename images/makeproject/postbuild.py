@@ -11,12 +11,12 @@ sys.path.append('/root/boinc/py')
 import boinc_path_config
 from Boinc import database, configxml
 
-
+PROJHOME=os.environ['PROJHOME']
 
 print "Copying project files to data volume..."
-sh('cp -r /root/projects.build/boincserver /root/projects')
+sh('cp -r {PROJHOME}.build/* {PROJHOME}'.format(PROJHOME=PROJHOME))
 for x in ['html', 'html/cache', 'upload', 'log_boincserver']: 
-    sh('chmod -R g+w /root/projects/boincserver/'+x)
+    sh('chmod -R g+w '+osp.join(PROJHOME,x))
 
 
 if not '--copy-only' in sys.argv:
@@ -27,7 +27,7 @@ if not '--copy-only' in sys.argv:
         try:
             database.create_database(
                 srcdir = '/root/boinc',
-                config = configxml.ConfigFile(filename='/root/projects/boincserver/config.xml').read().config,
+                config = configxml.ConfigFile(filename=osp.join(PROJHOME,'config.xml')).read().config,
                 drop_first = False
             )
         except _mysql_exceptions.ProgrammingError as e:
@@ -40,18 +40,18 @@ if not '--copy-only' in sys.argv:
             if e[0]==2003:  
                 if waited: sys.stdout.write('.'); sys.stdout.flush()
                 else: 
-                    sys.stdout.write("Waiting for mysql server to be up..."); sys.stdout.flush()
+                    sys.stdout.write("Waiting for mysql server to start..."); sys.stdout.flush()
                     waited=True
                 sleep(1)
             else: 
                 raise
         else:
-            sh('cd /root/projects/boincserver/html/ops; ./db_schemaversion.php > /root/projects/boincserver/db_revision')
+            sh('cd {PROJHOME}/html/ops; ./db_schemaversion.php > {PROJHOME}/db_revision'.format(PROJHOME=PROJHOME))
             break
     if waited: sys.stdout.write('\n')
 
 
     print "Running BOINC update scripts..."
-    os.chdir('/root/projects/boincserver')
+    os.chdir(PROJHOME)
     sh('bin/xadd')
     sh('(%s) | bin/update_versions'%('; '.join(['echo y']*10)))
