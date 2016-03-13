@@ -18,7 +18,7 @@ services:
      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
 
   makeproject:
-    image: boinc/server_makeproject:latest
+    image: boinc/server_makeproject:latest-b2d
     build: 
       context: images/makeproject
       dockerfile: Dockerfile.b2d
