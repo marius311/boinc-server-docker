@@ -7,7 +7,7 @@ volumes:
 
 services:
   mysql:
-    image: marius311/boincserver_mysql:latest
+    image: boinc/server_mysql:latest
     build: images/mysql
     network_mode: bridge
     container_name: boincserver_mysql
@@ -18,8 +18,10 @@ services:
      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
 
   makeproject:
-    image: marius311/boincserver_makeproject:latest
-    build: images/makeproject
+    image: boinc/server_makeproject:latest
+    build: 
+      context: images/makeproject
+      dockerfile: Dockerfile.b2d
     hostname: boincserver
     network_mode: bridge
     links: 
@@ -28,7 +30,7 @@ services:
      - "project:/project"
 
   apache:
-    image: marius311/boincserver_apache:latest
+    image: boinc/server_apache:latest
     build: images/apache
     container_name: boincserver_apache
     hostname: boincserver

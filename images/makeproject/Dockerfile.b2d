@@ -17,7 +17,9 @@ RUN apt-get update && apt-get install -y \
         php5-mysql \
         pkg-config \
         python \
-        python-mysqldb
+        python-mysqldb \
+        python-yaml \
+        wget
 
 
 # get source and compile server
@@ -42,6 +44,10 @@ RUN cd /root/boinc/tools \
            -e 's/Allow from all/Require all granted/g' \
            -e '/Order/d' $PROJHOME/boincserver.httpd.conf \
     && echo "admin:zJiQQ3OoIfehM" > $PROJHOME/html/ops/.htpasswd
+
+# create boinc2docker app
+COPY boinc2docker /root/boinc2docker
+RUN cd /root/boinc2docker && ./boinc2docker_create_app --iso 0.44 --vboxwrapper 26182 --appver 1.00
 
 # project files
 RUN mkdir $PROJHOME/html/stats_archive
