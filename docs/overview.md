@@ -11,7 +11,7 @@ Three separate images do the job:
 * `boincserver_makeproject` - A debian container (built from [/images/makeproject/Dockerfile](/images/makeproject/Dockerfile)) which serves to build the project directory and initialize the database
 * `boincserver_apache` - A slightly modified official Docker Apache-PHP image (built from [/images/apache/Dockerfile](/images/apache/Dockerfile)) which takes the project directory which was previously built and actually runs the server. 
 
-These can be pulled from the Docker hub with `make pull`, or if you are doing development these can be built with `make build` (in which case make sure you've cloned the submodules in the repository).
+These can be pulled from the Docker hub with `make pull`, or if you are doing development these can be built with `make build` (in which case make sure you've cloned this repository with `--recursive`, i.e. you have the submodules).
 
 Three named volumes store server files, 
 

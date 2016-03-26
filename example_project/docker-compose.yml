@@ -7,7 +7,7 @@ volumes:
 
 services:
   mysql:
-    image: marius311/boincserver_mysql:latest
+    build: images/mysql
     network_mode: bridge
     container_name: boincserver_mysql
     volumes:
@@ -17,17 +17,15 @@ services:
      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
 
   makeproject:
-    image: myproject_makeproject
     build: images/makeproject
     hostname: boincserver
     network_mode: bridge
     links: 
      - mysql
     volumes:
-     - "project:/root/projects"
+     - "project:/project"
 
   apache:
-    image: myproject_apache
     build: images/apache
     container_name: boincserver_apache
     hostname: boincserver
@@ -35,8 +33,8 @@ services:
     links:
      - mysql
     volumes: 
-     - "project:/root/projects"
-     - "results:/root/results"
+     - "project:/project"
+     - "results:/results"
     ports: 
      - "80:80"
     tty: true
