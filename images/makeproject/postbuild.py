@@ -12,11 +12,12 @@ import boinc_path_config
 from Boinc import database, configxml
 
 PROJHOME=os.environ['PROJHOME']
+PROJHOME_DST=PROJHOME+'.dst'
 
 print "Copying project files to data volume..."
-sh('cp -r {PROJHOME}.build/* {PROJHOME}'.format(PROJHOME=PROJHOME))
+sh('cp -r {src}/* {dst}'.format(src=PROJHOME,dst=PROJHOME_DST))
 for x in ['html', 'html/cache', 'upload', 'log_boincserver']: 
-    sh('chmod -R g+w '+osp.join(PROJHOME,x))
+    sh('chmod -R g+w '+osp.join(PROJHOME_DST,x))
 
 
 if not '--copy-only' in sys.argv:
@@ -27,7 +28,7 @@ if not '--copy-only' in sys.argv:
         try:
             database.create_database(
                 srcdir = '/root/boinc',
-                config = configxml.ConfigFile(filename=osp.join(PROJHOME,'config.xml')).read().config,
+                config = configxml.ConfigFile(filename=osp.join(PROJHOME_DST,'config.xml')).read().config,
                 drop_first = False
             )
         except _mysql_exceptions.ProgrammingError as e:
@@ -46,12 +47,12 @@ if not '--copy-only' in sys.argv:
             else: 
                 raise
         else:
-            sh('cd {PROJHOME}/html/ops; ./db_schemaversion.php > {PROJHOME}/db_revision'.format(PROJHOME=PROJHOME))
+            sh('cd {PROJHOME}/html/ops; ./db_schemaversion.php > {PROJHOME}/db_revision'.format(PROJHOME=PROJHOME_DST))
             break
     if waited: sys.stdout.write('\n')
 
 
     print "Running BOINC update scripts..."
-    os.chdir(PROJHOME)
+    os.chdir(PROJHOME_DST)
     sh('bin/xadd')
     sh('(%s) | bin/update_versions'%('; '.join(['echo y']*10)))

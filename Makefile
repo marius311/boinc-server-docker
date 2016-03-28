@@ -2,7 +2,11 @@ default:
 
 DC=docker-compose
 
+
 up: up-mysql post-makeproject up-apache
+
+down: 
+	$(DC) down
 
 build: 
 	$(DC) build
@@ -17,7 +21,7 @@ makeproject:
 	$(DC) build makeproject
 
 post-makeproject:
-	$(DC) run --rm makeproject /root/postbuild.py
+	$(DC) run --rm makeproject
 
 
 #--- apache ---
@@ -32,7 +36,7 @@ rm-apache:
 	$(DC) stop apache && $(DC) rm -f apache
 
 exec-apache:
-	docker exec -it boincserver_apache bash
+	docker exec -it $(shell $(DC) ps -q apache) bash
 
 
 # --- mysql ---

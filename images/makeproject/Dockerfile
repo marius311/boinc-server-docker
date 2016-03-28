@@ -37,7 +37,6 @@ RUN cd /root/boinc/tools \
                       --no_query \
                       --project_root $PROJHOME \
                       boincserver \
-    && mv $PROJHOME $PROJHOME.build && ln -s $PROJHOME.build $PROJHOME \
     && sed -i -e 's/Deny from all/Require all denied/g' \
            -e 's/Allow from all/Require all granted/g' \
            -e '/Order/d' $PROJHOME/boincserver.httpd.conf \
@@ -48,6 +47,5 @@ RUN mkdir $PROJHOME/html/stats_archive
 COPY db_dump_spec.xml $PROJHOME/
 
 # finish up 
-RUN unlink $PROJHOME
-ONBUILD RUN ln -s $PROJHOME.build $PROJHOME
 COPY postbuild.py /root/
+CMD /root/postbuild.py

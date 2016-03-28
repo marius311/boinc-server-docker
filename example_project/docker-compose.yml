@@ -9,7 +9,6 @@ services:
   mysql:
     build: images/mysql
     network_mode: bridge
-    container_name: boincserver_mysql
     volumes:
      - "mysql:/var/lib/mysql"
     environment: 
@@ -23,11 +22,10 @@ services:
     links: 
      - mysql
     volumes:
-     - "project:/project"
+     - "project:/project.dst"
 
   apache:
     build: images/apache
-    container_name: boincserver_apache
     hostname: boincserver
     network_mode: bridge
     links:
