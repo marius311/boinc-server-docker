@@ -3,7 +3,7 @@ Creating your real server
 
 ## Intro
 
-As described in [README.md](../README.md), running `make up` from the root of this repository will start an empty test BOINC server. This page explains how to customize your server, for example adding apps or changing the appearance of the web pages. You will need some familiarity with BOINC and with Docker. 
+This page explains how to customize your server, for example adding apps or changing the appearance of the web pages. You will need some familiarity with BOINC and with Docker. 
 
 First, start by making a copy of [/example_project](/example_project) to a new folder which will store your server (you can, and should, version control this folder). The server is made up of three Docker containers, 
 
@@ -11,7 +11,9 @@ First, start by making a copy of [/example_project](/example_project) to a new f
 * `apache` - this runs the Apache web server, scheduler, and various daemons that make up the server
 * `mysql` - this runs the mysql server holding your project database
 
-Each is built from a `Dockerfile` in the `example_project/images/` subfolders. To customize your server, simply change these files so the images are built according to your own customziations. Then run `make build` to build the images, and then `make up` to start the server containers (if a container is already running, you remove it with `make rm-X` where `X` is either `apache` or `mysql`). 
+Each is built from a `Dockerfile` in the `example_project/images/` subfolders. To general idea to customize your server is that you change the `Dockerfile`'s to build the images according to your own customziations (see below for some examples). 
+
+After making modifications, you run `make build` from your copy of the `example_project` folder to build your customized images, and `make up` to start the server (if your server is already running, this will simply swap in any images which have changed).
 
 ## Examples
 
@@ -19,7 +21,7 @@ Here are some examples of how you might customize the different images.
 
 ### apache image
 
-The `apache` image holds the web server, scheduler, and various daemons. Software needed by your daemons should be installed here (things like custom project web pages should instead be installed in the `makeproject` image). 
+The `apache` image runs the web server and the various BOINC daemons (scheduler, validators, etc...). Software needed by your daemons should be installed in this image.
 
 The default `Dockerfile` looks like this:
 ```Dockerfile
@@ -47,15 +49,10 @@ The default `Dockerfile` looks like this:
 FROM boinc/server_makeproject:latest
 ```
 
-Note there are two base `makeproject` images that you can start from,
-
-* `boinc/server_makeproject:latest` comes with no applications pre-installed 
-* `boinc/server_makeproject:latest-b2d` comes with `boinc2docker` pre-installed
-
-Suppose you wanted to use `boinc2docker`, copy in a custom `config.xml` file, and sign the exeuctables using your own private keys. First place your custom `config.xml` file and a folder `keys/` containing your private keys in your `/images/makeproject` folder. Then modify the `Dockerfile` to,
+Suppose you wanted to copy in a custom `config.xml` file and sign the exeuctables using your own private keys. First place your custom `config.xml` file and a folder `keys/` containing your private keys in your `/images/makeproject` folder. Then modify the `Dockerfile` so that it contains,
 
 ```Dockerfile
-FROM boinc/server_makeproject:latest-b2d
+FROM boinc/server_makeproject:latest
 
 # copy in custom config.xml
 COPY config.xml $PROJHOME/config.xml
@@ -67,9 +64,14 @@ RUN for f in `find $PROJHOME/apps/ -type f -not -name "version.xml"`; do \
     done \
     && rm $PROJHOME/keys/code_sign_private
 
-# finish up
-RUN unlink $PROJHOME
 ```
+
+**Warning:** Currrently this leaves your private keys in the image history, so do not push this image to any public registry like the Docker hub. A future version will fix this. 
+
+Note also that there are two available base `makeproject` images that you can start from,
+
+* `FROM boinc/server_makeproject:latest` comes with no applications pre-installed 
+* `boinc/server_makeproject:latest-b2d` comes with `boinc2docker` pre-installed
 
 
 ### mysql image
