@@ -70,7 +70,7 @@ RUN for f in `find $PROJHOME/apps/ -type f -not -name "version.xml"`; do \
 
 Note also that there are two available base `makeproject` images that you can start from,
 
-* `FROM boinc/server_makeproject:latest` comes with no applications pre-installed 
+* `boinc/server_makeproject:latest` comes with no applications pre-installed 
 * `boinc/server_makeproject:latest-b2d` comes with `boinc2docker` pre-installed
 
 
