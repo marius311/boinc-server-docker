@@ -53,6 +53,7 @@ RUN boinc2docker_create_app --iso 0.44 --vboxwrapper 26182 --appver 1.00
 # project files
 RUN mkdir $PROJHOME/html/stats_archive
 COPY db_dump_spec.xml $PROJHOME/
+COPY html $PROJHOME/html
 
 # finish up 
 COPY postbuild.py /root/

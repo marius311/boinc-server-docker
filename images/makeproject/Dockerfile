@@ -46,6 +46,7 @@ RUN cd /root/boinc/tools \
 # project files
 RUN mkdir $PROJHOME/html/stats_archive
 COPY db_dump_spec.xml $PROJHOME/
+COPY html $PROJHOME/html
 
 # finish up 
 COPY postbuild.py /root/
