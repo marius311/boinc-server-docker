@@ -14,18 +14,19 @@ sys.path.append('/root/boinc/py')
 import boinc_path_config
 from Boinc import database, configxml
 
+sh = partial(lambda s,l: _sh(s.format(**l)),l=locals())
+
 PROJHOME=os.environ['PROJHOME']
 PROJHOME_DST=PROJHOME+'.dst'
 
-sh = partial(lambda s,l: _sh(s.format(**l)),l=locals())
+config = configxml.ConfigFile(filename=join(PROJHOME,'config.xml')).read().config
 
 print "Copying project files to data volume..."
 for f in glob(join(PROJHOME,'*'))+glob(join(PROJHOME,'.*')): 
-    sh('cp -r "{f}" "{PROJHOME_DST}"')
-sh('rm -rf {PROJHOME}')
-sh('ln -s {PROJHOME_DST} {PROJHOME}')
-for f in ['html', 'html/cache', 'upload', 'log_*']:
-    sh('chmod -R g+w {PROJHOME}/{f}')
+    sh('cp -r "{f}" {PROJHOME_DST}')
+sh('rm -rf {PROJHOME}; ln -s {PROJHOME_DST} {PROJHOME}')
+for f in ['html', 'html/cache', 'upload', 'log_'+config.host]:
+    sh('mkdir -p {PROJHOME}/{f}; chmod -R 02770 {PROJHOME}/{f}')
 
 
 if not '--copy-only' in sys.argv:
@@ -34,11 +35,7 @@ if not '--copy-only' in sys.argv:
     waited=False
     while True:
         try:
-            database.create_database(
-                srcdir = '/root/boinc',
-                config = configxml.ConfigFile(filename=join(PROJHOME,'config.xml')).read().config,
-                drop_first = False
-            )
+            database.create_database(srcdir='/root/boinc', config=config, drop_first=False)
         except _mysql_exceptions.ProgrammingError as e:
             if e[0]==1007: 
                 print "Database exists, not overwriting."

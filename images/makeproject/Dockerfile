@@ -40,7 +40,8 @@ RUN cd /root/boinc/tools \
     && sed -i -e 's/Deny from all/Require all denied/g' \
            -e 's/Allow from all/Require all granted/g' \
            -e '/Order/d' $PROJHOME/boincserver.httpd.conf \
-    && echo "admin:zJiQQ3OoIfehM" > $PROJHOME/html/ops/.htpasswd
+    && echo "admin:zJiQQ3OoIfehM" > $PROJHOME/html/ops/.htpasswd \
+    && rm -r $PROJHOME/log_boincserver
 
 # project files
 RUN mkdir $PROJHOME/html/stats_archive
