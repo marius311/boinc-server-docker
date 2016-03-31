@@ -6,6 +6,7 @@ import os.path as osp
 import sys
 from time import sleep
 import _mysql_exceptions
+from glob import glob
 
 sys.path.append('/root/boinc/py')
 import boinc_path_config
@@ -15,8 +16,9 @@ PROJHOME=os.environ['PROJHOME']
 PROJHOME_DST=PROJHOME+'.dst'
 
 print "Copying project files to data volume..."
-sh('cp -r {src}/* {dst}'.format(src=PROJHOME,dst=PROJHOME_DST))
-for x in ['html', 'html/cache', 'upload', 'log_boincserver']: 
+for f in glob(osp.join(PROJHOME,'*'))+glob(osp.join(PROJHOME,'.*')):
+    sh('cp -r {src} {dst}'.format(src=f,dst=PROJHOME_DST))
+for x in ['html', 'html/cache', 'upload']+glob(osp.join(PROJHOME,'log_*')): 
     sh('chmod -R g+w '+osp.join(PROJHOME_DST,x))
 
 
