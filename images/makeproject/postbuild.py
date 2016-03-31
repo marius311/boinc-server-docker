@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
 import os
-from os import system as sh
+from os import system as _sh
 import os.path as osp
+from os.path import join, basename
 import sys
 from time import sleep
 import _mysql_exceptions
 from glob import glob
+from functools import partial
 
 sys.path.append('/root/boinc/py')
 import boinc_path_config
@@ -15,11 +17,15 @@ from Boinc import database, configxml
 PROJHOME=os.environ['PROJHOME']
 PROJHOME_DST=PROJHOME+'.dst'
 
+sh = partial(lambda s,l: _sh(s.format(**l)),l=locals())
+
 print "Copying project files to data volume..."
-for f in glob(osp.join(PROJHOME,'*'))+glob(osp.join(PROJHOME,'.*')):
-    sh('cp -r {src} {dst}'.format(src=f,dst=PROJHOME_DST))
-for x in ['html', 'html/cache', 'upload']+glob(osp.join(PROJHOME,'log_*')): 
-    sh('chmod -R g+w '+osp.join(PROJHOME_DST,x))
+for f in glob(join(PROJHOME,'*'))+glob(join(PROJHOME,'.*')): 
+    sh('cp -r "{f}" "{PROJHOME_DST}"')
+sh('rm -rf {PROJHOME}')
+sh('ln -s {PROJHOME_DST} {PROJHOME}')
+for f in ['html', 'html/cache', 'upload', 'log_*']:
+    sh('chmod -R g+w {PROJHOME}/{f}')
 
 
 if not '--copy-only' in sys.argv:
@@ -30,7 +36,7 @@ if not '--copy-only' in sys.argv:
         try:
             database.create_database(
                 srcdir = '/root/boinc',
-                config = configxml.ConfigFile(filename=osp.join(PROJHOME_DST,'config.xml')).read().config,
+                config = configxml.ConfigFile(filename=join(PROJHOME,'config.xml')).read().config,
                 drop_first = False
             )
         except _mysql_exceptions.ProgrammingError as e:
@@ -49,7 +55,7 @@ if not '--copy-only' in sys.argv:
             else: 
                 raise
         else:
-            sh('cd {PROJHOME}/html/ops; ./db_schemaversion.php > {PROJHOME}/db_revision'.format(PROJHOME=PROJHOME_DST))
+            sh('cd {PROJHOME}/html/ops; ./db_schemaversion.php > {PROJHOME}/db_revision')
             break
     if waited: sys.stdout.write('\n')
 
@@ -58,3 +64,4 @@ if not '--copy-only' in sys.argv:
     os.chdir(PROJHOME_DST)
     sh('bin/xadd')
     sh('(%s) | bin/update_versions'%('; '.join(['echo y']*10)))
+
