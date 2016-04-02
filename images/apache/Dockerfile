@@ -24,7 +24,6 @@ RUN rm -rf /root && mkdir /root && chmod 755 /root
 #so that www-data can read/write boinc server files (boinc server runs as root)
 RUN adduser www-data root
 COPY .bashrc /root/.bashrc
-RUN echo "umask 0002" >> /etc/apache2/envvars
 
 #build configuration
 ENV PROJHOME=/root/project
