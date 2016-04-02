@@ -23,7 +23,7 @@ COPY boinc /root/boinc
 RUN cd /root/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
 
 # build configuration
-ENV USER=root PROJHOME=/project
+ENV USER=root PROJHOME=/root/project
 
 # make project
 RUN cd /root/boinc/tools \

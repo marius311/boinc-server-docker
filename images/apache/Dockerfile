@@ -27,7 +27,7 @@ COPY .bashrc /root/.bashrc
 RUN echo "umask 0002" >> /etc/apache2/envvars
 
 #build configuration
-ENV PROJHOME=/project
+ENV PROJHOME=/root/project
 RUN ln -s $PROJHOME/boincserver.httpd.conf /etc/apache2/sites-enabled/boincserver.httpd.conf 
 WORKDIR $PROJHOME
 
