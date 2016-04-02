@@ -5,16 +5,18 @@ MAINTAINER Marius Millea <mariusmillea@gmail.com>
 #install packages 
 RUN apt-get update && apt-get install -y \
         cron \
-        git \
+        libjpeg62-turbo-dev \
+        libpng12-dev \
         mysql-client \
         python \
         rsyslog \
-        supervisor \
-        vim
+        supervisor
 
 #configure server
-RUN docker-php-ext-install mysqli 
-RUN a2enmod cgi
+RUN docker-php-ext-install mysqli \
+    && docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-install gd \
+    && a2enmod cgi
 
 #see https://github.com/docker/docker/issues/14651
 RUN rm -rf /root && mkdir /root && chmod 755 /root
