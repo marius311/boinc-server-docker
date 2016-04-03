@@ -46,7 +46,9 @@ RUN cd /root/boinc/tools \
 RUN mkdir $PROJHOME/html/stats_archive
 COPY db_dump_spec.xml $PROJHOME/
 COPY html $PROJHOME/html
+COPY bin $PROJHOME/bin
 
 # finish up 
+WORKDIR $PROJHOME
 COPY postbuild.py /root/
 CMD /root/postbuild.py

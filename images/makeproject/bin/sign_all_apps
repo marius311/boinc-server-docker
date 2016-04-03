@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+for f in `find $PROJHOME/apps/ -type f -not -name "version.xml"`; do
+    /root/boinc/tools/sign_executable $f $PROJHOME/keys/code_sign_private > ${f}.sig
+done
+
+if [ ! $1="--dont_delete_key" ]; then
+    rm $PROJHOME/keys/code_sign_private
+fi

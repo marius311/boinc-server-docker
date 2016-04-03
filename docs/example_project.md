@@ -15,6 +15,8 @@ Each is built from a `Dockerfile` in the `example_project/images/` subfolders. T
 
 After making modifications, you run `make build` from your copy of the `example_project` folder to build your customized images, and `make up` to start the server (if your server is already running, this will simply swap in any images which have changed).
 
+If you are not familiar with Docker, don't despair, writing Dockerfiles is pretty easy and intuitive. Here is a [reference](https://docs.docker.com/engine/reference/builder/) for how to write Dockerfiles (you will probably only really need two commands, `RUN` and `COPY`). Also, as an [example](https://github.com/marius311/cosmohome/blob/master/Dockerfile), this is the `Dockerfile` which builds Cosmology@Home.
+
 ## Examples
 
 Here are some examples of how you might customize the different images.
@@ -49,21 +51,19 @@ The default `Dockerfile` looks like this:
 FROM boinc/server_makeproject:latest
 ```
 
-Suppose you wanted to copy in a custom `config.xml` file and sign the exeuctables using your own private keys. First place your custom `config.xml` file and a folder `keys/` containing your private keys in your `/images/makeproject` folder. Then modify the `Dockerfile` so that it contains,
+Say you want to add your own `config.xml`. You would place the file in your `images/makeproject` folder, then modify the `Dockerfile` so that it contains,
 
 ```Dockerfile
 FROM boinc/server_makeproject:latest
-
-# copy in custom config.xml
 COPY config.xml $PROJHOME/config.xml
+```
 
-# sign executables
+You can copy in any other project files like your apps, web pages, etc... in this manner. You will also need to sign executables here. To do so, place your code signing keys in the `images/makeproject/keys` folder, then modify you Dockerfile so that it contains,
+
+```Dockerfile
+FROM boinc/server_makeproject:latest
 COPY keys $PROJHOME/keys
-RUN for f in `find $PROJHOME/apps/ -type f -not -name "version.xml"`; do \
-      /root/boinc/tools/sign_executable $f $PROJHOME/keys/code_sign_private > ${f}.sig; \
-    done \
-    && rm $PROJHOME/keys/code_sign_private
-
+RUN bin/sign_all_apps
 ```
 
 **Warning:** Currrently this leaves your private keys in the image history, so do not push this image to any public registry like the Docker hub. A future version will fix this. 
