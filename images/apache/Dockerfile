@@ -30,6 +30,10 @@ ENV PROJHOME=/root/project
 RUN ln -s $PROJHOME/boincserver.httpd.conf /etc/apache2/sites-enabled/boincserver.httpd.conf 
 WORKDIR $PROJHOME
 
+#logrotate
+COPY logrotate /etc/logrotate.d/boincserver
+RUN chmod 644 /etc/logrotate.d/boincserver
+
 #set up supervisor to run
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 CMD ["/usr/bin/supervisord"]

@@ -1,0 +1,5 @@
+/root/project/log_*/*.log {
+    missingok
+    rotate 10
+    size=100M
+}
