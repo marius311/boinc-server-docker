@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
         m4 \
         make \
         php5-cli \
+        php5-mysql \
         pkg-config \
         python \
         python-mysqldb

@@ -57,7 +57,7 @@ if not '--copy-only' in sys.argv:
 
 
     print "Running BOINC update scripts..."
-    os.chdir(PROJHOME_DST)
+    os.chdir(PROJHOME)
     sh('bin/xadd')
     sh('(%s) | bin/update_versions'%('; '.join(['echo y']*10)))
 
