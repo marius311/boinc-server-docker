@@ -1,5 +1,6 @@
-/root/project/log_*/*.log {
+/root/project/log_*/* {
     missingok
-    rotate 10
-    size=100M
+    rotate 7
+    daily
+    olddir .old
 }
