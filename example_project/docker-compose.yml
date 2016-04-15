@@ -22,7 +22,7 @@ services:
     links: 
      - mysql
     volumes:
-     - "project:/project.dst"
+     - "project:/root/project.dst"
 
   apache:
     build: images/apache
@@ -31,7 +31,7 @@ services:
     links:
      - mysql
     volumes: 
-     - "project:/project"
+     - "project:/root/project"
      - "results:/results"
     ports: 
      - "80:80"
