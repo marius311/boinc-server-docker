@@ -29,8 +29,10 @@ services:
      - "project:/root/project.dst"
 
   apache:
-    image: boinc/server_apache:latest
-    build: images/apache
+    image: boinc/server_apache:latest-b2d
+    build: 
+      context: images/apache
+      dockerfile: Dockerfile.b2d
     hostname: boincserver
     network_mode: bridge
     links:
@@ -38,6 +40,7 @@ services:
     volumes: 
      - "project:/root/project"
      - "results:/results"
+     - "/var/run/docker.sock:/var/run/docker.sock"
     ports: 
      - "80:80"
     tty: true
