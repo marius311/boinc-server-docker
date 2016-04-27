@@ -56,6 +56,7 @@ rm-mysql:
 TAG=$(shell git describe --tags --abbrev=0)
 tag:
 	docker tag boinc/server_apache:latest boinc/server_apache:$(TAG)
+	docker tag boinc/server_apache:latest-b2d boinc/server_apache:$(TAG)-b2d
 	docker tag boinc/server_mysql:latest boinc/server_mysql:$(TAG)
 	docker tag boinc/server_makeproject:latest boinc/server_makeproject:$(TAG)
 	docker tag boinc/server_makeproject:latest-b2d boinc/server_makeproject:$(TAG)-b2d
