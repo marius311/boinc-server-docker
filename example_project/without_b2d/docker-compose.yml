@@ -1,0 +1,40 @@
+version: "2"
+
+volumes:
+  mysql:
+  project:
+  results:
+
+services:
+  mysql:
+    build: images/mysql
+    network_mode: bridge
+    volumes:
+     - "mysql:/var/lib/mysql"
+    environment: 
+     - MYSQL_ROOT_PASSWORD=
+     - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+
+  makeproject:
+    build: images/makeproject
+    hostname: boincserver
+    network_mode: bridge
+    links: 
+     - mysql
+    volumes:
+     - "project:/root/project.dst"
+
+  apache:
+    build: images/apache
+    hostname: boincserver
+    network_mode: bridge
+    links:
+     - mysql
+    volumes: 
+     - "project:/root/project"
+     - "results:/results"
+    ports: 
+     - "80:80"
+    tty: true
+
+
