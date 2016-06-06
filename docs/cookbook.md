@@ -125,10 +125,11 @@ Now that you understand the mechanics of how to launch a test server and submit 
 * **example_project/with_b2d** - this has `boinc2docker` pre-installed, just like the test server 
 * **example_project/without_b2d** - if you don't need `boinc2docker`, this image comes without it and is slightly smaller
 
-The first step is to copy one of these two folders to a new folder, which for the purpose of this guide we will call `myproject/` (you can, and should, version control this folder so that you have your project's entire history saved, e.g. like at [Cosmology@Home](https://github.com/marius311/cosmohome)). The folder structure will look like this, 
+The first step is to copy one of these two folders to a new folder, which for the purpose of this guide we will call `myproject/` (you can, and should, version control this folder so that you have your project's entire history saved, e.g. like [Cosmology@Home](https://github.com/marius311/cosmohome)). The folder structure will look like this, 
 
 ```
 myproject/
+    Makefile
     docker-compose.yml
     images/
         apache/
@@ -139,13 +140,51 @@ myproject/
             Dockerfile
 ```
 
-The three `Dockerfile`'s will contain any modifications your project needs ontop of the default `boinc-server-docker` images. The `docker-compose.yml` file specifies how these containers work together, and will likely not need any modifications from you. 
+The three `Dockerfile`'s will contain any modifications your project needs ontop of the default `boinc-server-docker` images. The `docker-compose.yml` file specifies how these containers work together, and will likely not need any modifications from you. The `Makefile` contains a set of commands for starting and stopping your server, and will also likely not need any modification. 
 
 ### Required steps
 
+#### Building and running your server
+
+The test server did not require us to build any Docker containers because these were pre-built, stored on the Docker Hub, and were downloaded to your machine with the `make pull` command. The images which comprise your server, on the other hand, need to be built; the command to do so is simply `make build`. 
+
+Afterwards, you can run a `make up` just as before to start the server. Of course, at this point you have made no modifications at all so the server is identical to the test server. We will discuss how to customize your server shortly. In general as you develop your server, you will be making some changes then running the command `make build up` to test them out. 
+
+
 #### Pinning the `boinc-server-docker` version
 
-#### Custom `config.xml` and webpages
+If you open up one of the Dockerfiles, for example `myproject/images/apache/Dockerfile`, you will see this:
+
+    FROM boinc/server_apache:latest-b2d
+
+We have not discussed Dockerfile commands yet, but they are fairly simple, and you only need to know about three of them relevant to use `boinc-server-docker`. One of them is the `FROM` command which always comes at the beginning of a Dockerfile and specifies that this image is built starting from another image. In our case it is saying that the Apache image for your server is based on the `boinc-server-docker` image called `boinc/server_apache:latest-b2d`. 
+
+An important step you should take is to replace `latest` with a specific version, for example `1.2.1`, and you should do so for all three Dockerfiles. You can find the latest version of `boinc-server-docker` by looking at the [GitHub releases](https://github.com/marius311/boinc-server-docker/releases). With the versions pinned in this way, you can control exactly when you upgrade the version of `boinc-server-docker` that your server uses, and you can reproducibly go back to any previous version of your server. 
+
+
+### Installing software
+
+By default the `boinc-server-docker` images come with as few unnecessary programs as possible. For example, the Apache container which one often `make exec-apache`'s into to maintain the server does not by default include a text editor. You *could* run `apt-get install vim` from inside the Apache container, but note that if you now stop and start the container (`make rm-apache up-apache`), `vim` will be gone. This is because files inside Docker containers are not persisted unless they are in a volume. The correct way to install software like `vim` or anything else is to do so in the Dockerfile which builds that image. 
+
+Again opening up `myproject/images/apache/Dockerfile`, we can change it to say
+
+    FROM boinc/server_apache:latest-b2d
+
+    RUN apt-get update && apt-get install -y vim
+    
+`RUN` is another Dockerfile command and simply runs a regular Linux shell command inside our container. We need an `apt-get update` to pull the latest package information and the `-y` flag automatically answers "yes" when `apt-get` asks whether you really want to install the package. If we now `make build`, it will produce a new Apache image for our project, and `make up` will start it (replacing any old image if one was running). Finally, `make exec-apache` will get a shell inside the container where you can verify `vim` is properly installed. 
+
+In exactly this way you can install any software into any of the containers, or run any commands that might be necessary to set them up. These commands are for the general set up of the server; for things like submitting jobs ,performing server maintenance tasks like database optimization, etc... you will simply `exec-apache` into the server and run the commands directly from there. 
+
+#### Custom `config.xml` and other files
+
+Next you will probably want to give your project a name, give it a URL, and more generally copy things into the server and change various files. Lets take a look at changing the project name. This is specified in the file `/root/project/html/project/project.inc` inside the Apache Docker container. In this file there is a line, 
+
+    define("PROJECT", "REPLACE WITH PROJECT NAME");
+
+You can edit this file from inside the Apache container to replace the project name with whatever you'd like, and you can immediately see the change if you refresh the project webpage. 
+
+     
 
 #### Digitally signing your apps
 
@@ -156,5 +195,8 @@ The three `Dockerfile`'s will contain any modifications your project needs ontop
 
 #### Custom `boinc2docker`-based apps
 
+#### 
 
+### Advanced steps
 
+#### Squashing images

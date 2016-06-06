@@ -1,13 +1,13 @@
 ## Immediate tasks (in order of importance). 
 Note: some of these involve contributions to BOINC, not this project directly:
 
-#### 1. Create a Dockerized client so we can have a fully Dockerized testing environment
+#### 1. Create a Dockerized client / unit tests
 
-Basically right now getting the server up is pretty much a "docker-compose up" but then to connect a client you have to have the BOINC client on your computer, possibly restart it, use the GUI, etc... to actually test the server, which is kind of a pain. It'd be nice to have this just be some other container which you can just run. This will involve getting Virtualbox working inside the Docker (since the client needs Virtualbox), and possibly also the client GUI (although techinically you can have the GUI on your machine and connect it to the client, but that's several more steps which might be avoided otherwise).
+When you make some updates to the code, you either have to test by hand nothing broke, or just launch in production hoping that nothing did. Of course, it'd be better if we had unit tests. These tests should involve actually connecting a BOINC client to server, hence we should probably Dockerize a client. This will involve getting Virtualbox working inside Docker (since our jobs need a client with Virtualbox), and possibly also the client GUI (although technically you can have the GUI on your machine and connect it to the Dockerized client).
 
 #### 2. Add persistence drive ability to vboxwrapper
 
-The way we persist images on the volunteers' computers is that we just tar up /var/lib/docker from inside Virtualbox and store it to a shared folder (see https://github.com/marius311/boot2docker/blob/boinc2docker/rootfs/rootfs/save_docker.sh). This is super inefficient b/c it means 1) it takes time to tar/untar and 2) since we use a RAM disk only, this takes up memory, leaving less for the program, possibly becoming prohibitive as we rack up images. The right way to do it is the way boot2docker does by default, with an actual persisted VM disk. This means we have to modify vboxwrapper (this is the program that launches our VM with the modified boot2docker ISO in it) to have the concept of a VM disk which persists between jobs, and to attach it to the VM. 
+Right now the Docker image for a `boinc2docker` job is loaded from BOINC input files at the beginning of each job. This can be slow and because the VM uses a RAM disk we have to store the entire image in memory. If we had a persistence disk we could only take the delay of load the image once and also not have to store it in RAM. This task would require adding the concept a persistence disk to `vboxwrapper`. 
 
 #### 3. Fix BOINC detection of VT-x/AMD-v
 
@@ -16,15 +16,6 @@ Our VM's are 64-bit so they need VT-x/AMD-v. Right now if a user doesn't know ab
 #### 4. Fix vboxwrapper Guest logging
 
 vboxwrapper logs the output from the "vboxmonitor" program but the way its coded it seems to often miss lines of log. At the very least it was written to only scan the last 8k of the log a time, so a sudden long log output will definitely cause it to miss things. To me it seems like it misses things in other cases as well though. To be investigated. 
-
-#### 5. Improve squashing utility (https://github.com/marius311/stfd)
-
-This doesn't work on Docker 1.10+ b/c the image format changed (https://github.com/jwilder/docker-squash/issues/45). This is a pretty important piece of the puzzle since its important we squash images since volunteer internet connections are not great. The task would be to either patch docker-squash to work with 1.10 (lots of people outside of BOINC might find that useful, btw), or for now package up docker-squash in a Docker-inside-Docker container running 1.9 (actually I'm not sure that would work, but to be looked into). 
-
-#### 6. Do Docker pulls via BOINC's file transfer system
-
-The docker pull command happens inside the running container, which can fail due to Virtualbox networking issues or user
-s internet problems, and also means no computation is done during this part. (The failed pulls are the #1 cause of computation errors we see, btw, about ~5% of all jobs fail this way). So we should make the pull use BOINC's actual transfer system, which also gives the user a nice download progress bar to let them know that's what's happening, will auto retry, and will allow other computation to happen during this time. True integration is difficult / impossible, but I bet something simple can be done, where when we `boinc2docker_create_work <image>` on the server, the server downloads the `<image>` and exports it and creates a BOINC "input file", creates the job with this file, then on the user side this file is imported into the Docker daemon inside the container. Not sure if its possible to do this at per-layer level. At the very least we should separate the base image (probably debian or whatever) and the remainder, which is probably good anyway since we usually squash all the top layers anyway.  
 
 
 #### 7. Add an SMTP server to boinc-server-docker 
