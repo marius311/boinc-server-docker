@@ -11,22 +11,21 @@ Once you have your server running, there a few ways to develop and run applicati
 
 ## Requirements
 
-The computer hosting your server must run Linux. Additionally it needs the following software:
+If you are hosting your server on a Linux machine, the requirements are,
 
 * [Docker](https://docs.docker.com/engine/installation/) (>=1.10)
 * [docker-compose](https://docs.docker.com/compose/install/) (>=1.6)
 * git
-* make
 
-There are no other dependencies, as everything else is packaged inside of Docker.
+(Note that Docker requires a Linux kernel newer than version 3.10)
 
-*TODO: It should work OK on Mac/Windows too via docker-machine, but this needs to be tested/documented. Eventually the native hypervisor support will make it even easier.*
+If you are hosting your server on Windows/Mac, the requirements are,
 
-### Installing Docker
+* [Docker Toolbox](https://www.docker.com/products/docker-toolbox)  (>=1.10)
 
-Since this guide assumes you don't know about Docker, we will give instructions how to install it. 
+There are no other dependencies, as everything else is packaged inside of Docker. 
 
-TODO. 
+The server itself runs Linux. On Windows/Mac, Docker Toolbox does the job of transparently virtualizing a Linux machine to run the server and configuring the networking properly. The commands given in this guide are Linux commands which, if you are running on Window/Mac, should be run from the "Docker Quickstart Terminal" (and on Windows you will need to add `.exe` to the end, e.g. `docker.exe` instead of `docker`).
 
 
 ## Docker lightning intro
@@ -52,11 +51,11 @@ cd boinc-server-docker
 and then run,
 
 ```bash
-make pull
-make up
+docker-compose pull
+docker-compose up -d
 ```
 
-You now have a running BOINC server!  (*Note:* the `make pull` step downloads about ~1GB of data so it may take a while)
+You now have a running BOINC server!  (*Note:* the `pull` step downloads about ~1GB of data so it may take a while)
 
 The server is made up of three Docker images,
 
@@ -64,9 +63,9 @@ The server is made up of three Docker images,
 * **boinc/server_apache** - This runs the Apache server that serves your project's webpage. It also runs all of the various backend daemons and programs which communicate with hosts that connect to your server.
 * **boinc/server_makeproject** - Unlike the other two images, this one doesn't remain running while your server is running. Instead, its run at the beginning to create your project's home folder. Your project's home folder contains things like your web pages, your applications, your job input files, etc... This folder is stored in a volume "boincserverdocker_project" and is mounted into the apache image after its created here.
 
-The `Makefile` contains various convenience methods to start and stop these containers. For example, `make rm-apache` will stop the apache container, or `make up-mysql` will start the mysql container (if it wasn't already running). If you read the `Makefile`, you'll see these all involve short calls to the program `docker-compose`. This program orchestrates Docker applications which involve multiple Docker images, like ours. The configuration and relation between the multiple images is given in the file `docker-compose.yml`. 
+The `docker-compose` program orchestrates Docker applications which involve multiple Docker images, like ours. The configuration and relation between the multiple images is given in the file `docker-compose.yml`. 
 
-If you wish to get a shell inside your server (sort of like ssh'ing into it), run `make exec-apache`. From here you can run any one-off commands on your server, for example checking the server status (`bin/status`) or submitting some jobs with (`bin/create_work ...`; more on this later). However, remember that only the project folder is a volume, so any changes you make outside of this will dissapear the next time you restart the apache container. In particular, any software installed with `apt-get` will dissapear; the correct way to install anything into your server is discussed [later](tbd). 
+If you wish to get a shell inside your server (sort of like ssh'ing into it), run `docker exec -it boincserverdocker_apache_1`. From here you can run any one-off commands on your server, for example checking the server status (`bin/status`) or submitting some jobs with (`bin/create_work ...`; more on this later). However, remember that only the project folder is a volume, so any changes you make outside of this will disappear the next time you restart the server. In particular, any software installed with `apt-get` will disappear; the correct way to install anything into your server is discussed [later](tbd). 
 
 #### Accessing the webpage / connecting a client
 
