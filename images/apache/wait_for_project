@@ -1,0 +1,3 @@
+#/bin/sh
+
+while [ ! -f $PROJHOME/.ready ] ; do sleep 1; done

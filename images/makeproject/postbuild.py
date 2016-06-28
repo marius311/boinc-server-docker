@@ -60,4 +60,5 @@ if not '--copy-only' in sys.argv:
     os.chdir(PROJHOME)
     sh('bin/xadd')
     sh('(%s) | bin/update_versions'%('; '.join(['echo y']*10)))
-
+    
+sh('touch {PROJHOME}/.ready')
