@@ -33,6 +33,7 @@ services:
     volumes: 
      - "project:/root/project"
      - "results:/results"
+     - "/var/run/docker.sock:/var/run/docker.sock"
     ports: 
      - "80:80"
     tty: true
