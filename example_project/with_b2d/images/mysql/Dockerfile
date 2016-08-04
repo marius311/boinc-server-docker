@@ -1,1 +1,1 @@
-FROM boinc/server_mysql:latest-b2d
+FROM boinc/server_mysql:latest
