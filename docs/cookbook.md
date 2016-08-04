@@ -72,7 +72,7 @@ The server is made up of three Docker images,
 
 The `docker-compose` program orchestrates Docker applications which involve multiple Docker images (like ours). The configuration and relation between the multiple images can be seen in the file `docker-compose.yml`. 
 
-If you wish to get a shell inside your server (sort of like ssh'ing into it), run `docker exec -it boincserverdocker_apache_1`. From here you can run any one-time commands on your server, for example checking the server status (`bin/status`) or submitting some jobs with (`bin/create_work ...`; more on this later). However, remember that only the project folder is a volume, so any changes you make outside of this will disappear the next time you restart the server. In particular, any software installed with `apt-get` will disappear; the correct way to install anything into your server is discussed [later](tbd). 
+If you wish to get a shell inside your server (sort of like ssh'ing into it), run `docker exec -it boincserverdocker_apache_1 bash`. From here you can run any one-time commands on your server, for example checking the server status (`bin/status`) or submitting some jobs with (`bin/create_work ...`; more on this later). However, remember that only the project folder is a volume, so any changes you make outside of this will disappear the next time you restart the server. In particular, any software installed with `apt-get` will disappear; the correct way to install anything into your server is discussed [later](tbd). 
 
 #### Accessing the webpage / connecting a client
 
