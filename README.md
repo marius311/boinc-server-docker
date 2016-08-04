@@ -17,7 +17,7 @@ There are no other dependencies, as everything else is packaged inside of Docker
 Documentation
 -------------
 
-For a full tutorial on setting up the server, see the [boinc-server-docker cookbook](cookbook.md). 
+For a full tutorial on setting up the server, see the [cookbook.md](https://github.com/marius311/boinc-server-docker/blob/master/docs/cookbook.md). 
 
 If you are somewhat familiar with Docker and BOINC, the following short description takes you through creating a server and running your own science application. 
 
