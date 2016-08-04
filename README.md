@@ -17,7 +17,7 @@ There are no other dependencies, as everything else is packaged inside of Docker
 Documentation
 -------------
 
-For a full tutorial on setting up the server, see the [cookbook.md](https://github.com/marius311/boinc-server-docker/blob/master/docs/cookbook.md). 
+For a full tutorial on setting up the server, see the [project cookbook](https://github.com/marius311/boinc-server-docker/blob/master/docs/cookbook.md). 
 
 If you are somewhat familiar with Docker and BOINC, the following short description takes you through creating a server and running your own science application. 
 
@@ -54,7 +54,7 @@ If your job has output files, have the container write them in `/root/shared/res
 
 This is a simple example, but any Docker containers with arbitrary code installed inside of them will work! 
 
-Finally, `boinc-server-docker` is not just useful to get a simple test server running, its actually meant to run your real server. To learn how to, read the [cookbook](cookbook.md), or look at the [Cosmology@Home](www.github.com/marius311/cosmohome) source code as an example (`boinc-server-docker` was in fact originally developed for Cosmology@Home). 
+Finally, `boinc-server-docker` is not just useful to get a simple test server running, its actually meant to run your real server. To learn how to, read the [project cookbook](https://github.com/marius311/boinc-server-docker/blob/master/docs/cookbook.md), or look at the [Cosmology@Home](https://www.github.com/marius311/cosmohome) source code as an example (`boinc-server-docker` was in fact originally developed for Cosmology@Home). 
 
 Happy crunching! 
 
