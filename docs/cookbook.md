@@ -52,7 +52,7 @@ Docker images are created by writing a **Dockerfile** which specifies a base ima
 Before creating your real project, lets launch a sample test server to see how it works. To do this, get the `boinc-server-docker` source code, 
 
 ```bash
-git clone https://github.com/marius311/boinc-server-docker.git
+git clone --recursive https://github.com/marius311/boinc-server-docker.git
 cd boinc-server-docker
 ```
 
