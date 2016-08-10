@@ -106,7 +106,7 @@ docker run python:alpine python -c "print('Hello BOINC')"
 ```
 and it would print the string "Hello BOINC". 
 
-Suppose you wanted to run this as a BOINC job. To do so, first get a shell inside your server with `docker exec -it boincserverdocker_apache_1` and from the project directory run, 
+Suppose you wanted to run this as a BOINC job. To do so, first get a shell inside your server with `docker exec -it boincserverdocker_apache_1 bash` and from the project directory run, 
 
 ```bash
 root@boincserver:~/project# bin/boinc2docker_create_work.py \
@@ -181,7 +181,7 @@ Again opening up `myproject/images/apache/Dockerfile`, we can change it to say
 
     RUN apt-get update && apt-get install -y vim
     
-`RUN` is another Dockerfile command and simply runs a regular Linux shell command inside our container. We need an `apt-get update` to pull the latest package information and the `-y` flag automatically answers "yes" when `apt-get` asks whether you really want to install the package. If we now run `docker-compose up -d --build`, it will produce a new Apache image for our project and start it up, swapping out the old version (that lacked `vim`). If you now get a shell inside the container with `docker exec -it boincserverdocker_apache_1` you will see that `vim` is correctly installed, and will still exist if you restart the container. 
+`RUN` is another Dockerfile command and simply runs a regular Linux shell command inside our container. We need an `apt-get update` to pull the latest package information and the `-y` flag automatically answers "yes" when `apt-get` asks whether you really want to install the package. If we now run `docker-compose up -d --build`, it will produce a new Apache image for our project and start it up, swapping out the old version (that lacked `vim`). If you now get a shell inside the container with `docker exec -it boincserverdocker_apache_1 bash` you will see that `vim` is correctly installed, and will still exist if you restart the container. 
 
 In exactly this way you can install any software into any of the containers, or run any commands that might be necessary to set them up. These commands are for the general set up of the server; for things like submitting jobs, performing server maintenance tasks like database optimization, etc... you can just get a shell into the server and run the commands directly from there.
 
