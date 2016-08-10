@@ -62,7 +62,7 @@ Happy crunching!
 Developement and Contributing
 -----------------------------
 
-To modify and rebuild any of the `boinc-server-docker` images, you will need this git repository's submodules checked out (`git clone --recursive` or to add them to an existing checked out copy `git submodule init && git submodule update`). Note also that currently building the images only works on Linux. 
+To modify and rebuild any of the `boinc-server-docker` images, you will need this git repository's submodules checked out (run `git submodule update --init --recursive`, or clone with `git clone --recursive` in the first place). Note also that currently building the images only works on Linux. 
 
 
 Please don't hesitate to get in contact with the maintainers of this project or to submit pull requests!
