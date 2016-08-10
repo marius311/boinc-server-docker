@@ -25,6 +25,7 @@ To check out the repository and get a test server fully up and running, simply r
 ```bash
 git clone https://github.com/marius311/boinc-server-docker.git
 cd boinc-server-docker
+docker-compose pull
 docker-compose up -d
 ```
 
@@ -58,7 +59,10 @@ Finally, `boinc-server-docker` is not just useful to get a simple test server ru
 
 Happy crunching! 
 
-Contributing
-------------
+Developement and Contributing
+-----------------------------
+
+To modify and rebuild any of the `boinc-server-docker` images, you will need this git repository's submodules checked out (`git clone --recursive` or to add them to an existing checked out copy `git submodule init && git submodule update`). Note also that currently building the images only works on Linux. 
+
 
 Please don't hesitate to get in contact with the maintainers of this project or to submit pull requests!

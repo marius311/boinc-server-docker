@@ -59,6 +59,7 @@ cd boinc-server-docker
 and then run,
 
 ```bash
+docker-compose pull
 docker-compose up -d
 ```
 
