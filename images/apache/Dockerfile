@@ -35,6 +35,6 @@ COPY logrotate /etc/logrotate.d/boincserver
 RUN chmod 644 /etc/logrotate.d/boincserver
 
 #set up supervisor to run
-COPY wait_for_project /usr/bin/wait_for_project
+COPY start_project /usr/bin/start_project
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 CMD ["/usr/bin/supervisord"]
