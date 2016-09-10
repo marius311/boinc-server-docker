@@ -4,6 +4,7 @@ volumes:
   mysql:
   project:
   results:
+  letsencrypt:      
 
 services:
   mysql:
@@ -41,8 +42,8 @@ services:
      - "project:/root/project"
      - "results:/results"
      - "/var/run/docker.sock:/var/run/docker.sock"
+     - "letsencrypt:/etc/letsencrypt"
     ports: 
      - "80:80"
+     - "443:443"
     tty: true
-
-
