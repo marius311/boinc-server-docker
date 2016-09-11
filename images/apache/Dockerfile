@@ -5,6 +5,7 @@ MAINTAINER Marius Millea <mariusmillea@gmail.com>
 #install packages 
 RUN apt-get update && apt-get install -y \
         cron \
+        exim4 \
         libjpeg62-turbo-dev \
         libpng12-dev \
         mysql-client \
@@ -38,6 +39,11 @@ WORKDIR $PROJHOME
 #logrotate
 COPY logrotate /etc/logrotate.d/boincserver
 RUN chmod 644 /etc/logrotate.d/boincserver
+
+#mail server config
+COPY update-exim4.conf.conf /etc/exim4/update-exim4.conf.conf
+RUN update-exim4.conf \
+    && echo "sendmail_path = /usr/sbin/sendmail -t -i" > /usr/local/etc/php/php.ini
 
 #set up supervisor to run
 COPY start_project /usr/bin/start_project
