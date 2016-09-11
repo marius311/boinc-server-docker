@@ -8,9 +8,14 @@ RUN apt-get update && apt-get install -y \
         libjpeg62-turbo-dev \
         libpng12-dev \
         mysql-client \
+        nano \
         python \
         rsyslog \
-        supervisor
+        supervisor \
+        vim-tiny \
+        wget \
+    && wget https://git.io/psysh -O /usr/bin/psysh \
+    && chmod +x /usr/bin/psysh
 
 #configure server
 RUN docker-php-ext-install mysqli \
