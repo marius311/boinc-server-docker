@@ -47,7 +47,8 @@ RUN cd /root/boinc/tools \
 # create boinc2docker app
 COPY boinc2docker /root/boinc2docker
 ENV PATH=/root/boinc2docker:$PATH
-RUN boinc2docker_create_app --iso 1.0.0 --vboxwrapper 26186 --appver 1.04
+# the vboxwrapper/iso/appver installed will be taken from boinc2docker/boinc2docker.yml
+RUN boinc2docker_create_app
 
 # project files
 RUN mkdir $PROJHOME/html/stats_archive
