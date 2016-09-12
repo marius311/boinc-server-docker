@@ -210,3 +210,30 @@ You can edit this file from inside the Apache container to replace the project n
 ### Advanced steps
 
 #### Squashing images
+
+#### Advanced email configuration
+
+By default, `boinc-server-docker` comes with the [exim](http://www.exim.org/) SMTP server configured and running, so your project should be able to send emails to volunteers (for example, when they receive a private message, or you choose to send them emails via the "ops" console, etc...) 
+
+The exim server comes preconfigued with a basic set of options which should work, but might need to be tweaked in some cases. One common reason you may need to tweak them is if your ISP has blocked port 25, which is used by exim to send emails. If you're unable to connect to port 25 of a well known email server, e.g. if `telnet gmail.com 25` fails, this may be the case. 
+
+To solve this, you need to relay your mail through a "smarthost" over a different port. To do so, you need edit the `/etc/exim4/update-exim4.conf.conf` file in the apache container (take a look at the default one [here](https://github.com/marius311/boinc-server-docker/blob/mailer/images/apache/update-exim4.conf.conf), the documentation for this is [here]( http://pkg-exim4.alioth.debian.org/README/update-exim4.conf.8.html#CONFIGURATION VARIABLES)). For example, to use Gmail itself as a smarthost, you could add the following to the `update-exim4.conf.conf` file:
+
+```
+dc_eximconfig_configtype='smarthost'
+dc_smarthost='smtp.gmail.com:587'
+```
+
+and then add
+
+```
+smtp.gmail.com:mygmailaddress@gmail.com:mypassword
+```
+
+to `/etc/exim4/passwd.client `. 
+
+Both of these files need to copied into the apache container (which you can do with `COPY` commands in the Dockerfile for your into your customized apache image), and the container should be restarted for changes to take effect.
+
+Note, you could also use your ISP's SMTP relay if they have one (which might be nicer since Gmail will rewrite your "from" field). 
+
+Finally, be ware that sometimes as you test your project's email capabaility, you might get your project IP black-listed as SPAM. Unfortunately I don't have a general solution for this, just be wary, and if it does happen, you can usually get yourself off of it by Googling / following links in e.g. the spam-assasin report, then following the required steps. 
