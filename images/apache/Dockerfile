@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
         cron \
         libjpeg62-turbo-dev \
         libpng12-dev \
+        libssl1.0.0 \
         mysql-client \
         nano \
         python \
