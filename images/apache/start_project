@@ -2,6 +2,14 @@
 
 cd $PROJHOME
 while [ ! -f .ready ] ; do sleep 1; done
+
+# drupal config
+mysql -h mysql -e "create database if not exists drupal"
+mkdir /root/project/drupal
+ln -sfnT /root/project/drupal /var/www/html/sites/default/files
+chgrp www-data /root/project/drupal /var/www/html/sites/default/files
+
+# start boinc daemons
 bin/start
 (echo "PATH=$PATH"; echo "SHELL=/bin/bash"; cat *.cronjob) | crontab
     

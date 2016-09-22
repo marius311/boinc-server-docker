@@ -5,6 +5,7 @@ MAINTAINER Marius Millea <mariusmillea@gmail.com>
 #install packages 
 RUN apt-get update && apt-get install -y \
         cron \
+        drush \
         libjpeg62-turbo-dev \
         libpng12-dev \
         libssl1.0.0 \
@@ -43,6 +44,15 @@ WORKDIR $PROJHOME
 #logrotate
 COPY logrotate /etc/logrotate.d/boincserver
 RUN chmod 644 /etc/logrotate.d/boincserver
+
+
+#set up drupal
+RUN curl -L https://ftp.drupal.org/files/projects/drupal-6.38.tar.gz | tar zxf - -C /var/www/html --strip=1 \
+    && a2enmod rewrite \
+    && rm -rf /var/www/html/sites/all /var/www/html/sites/default \
+    && ln -s /root/boinc/drupal/sites/all /root/boinc/drupal/sites/default  /var/www/html/sites
+COPY drupal.httpd.conf /etc/apache2/sites-enabled/drupal.httpd.conf
+COPY dbconfig.php /var/www/html/sites/default/dbconfig.php
 
 #set up supervisor to run
 COPY start_project /usr/bin/start_project

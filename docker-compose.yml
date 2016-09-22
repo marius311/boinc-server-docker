@@ -41,8 +41,7 @@ services:
      - "project:/root/project"
      - "results:/results"
      - "/var/run/docker.sock:/var/run/docker.sock"
+     - "./images/makeproject/boinc/drupal:/root/boinc/drupal"
     ports: 
      - "80:80"
     tty: true
-
-
