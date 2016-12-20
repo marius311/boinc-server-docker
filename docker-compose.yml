@@ -4,6 +4,7 @@ volumes:
   mysql:
   project:
   results:
+  sshgrid:
 
 services:
   mysql:
@@ -41,8 +42,22 @@ services:
      - "project:/root/project"
      - "results:/results"
      - "/var/run/docker.sock:/var/run/docker.sock"
+     - "sshgrid:/sshgrid"
     ports: 
      - "80:80"
     tty: true
-
-
+    
+  sshgrid:
+    image: boinc/server_sshgrid:latest
+    build: 
+      context: images/sshgrid
+      dockerfile: Dockerfile
+    hostname: boincserver
+    network_mode: bridge
+    links:
+     - mysql
+    volumes: 
+     - "sshgrid:/sshgrid"
+    ports: 
+     - "422:22"
+    tty: true
