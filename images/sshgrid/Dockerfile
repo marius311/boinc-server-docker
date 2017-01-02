@@ -2,14 +2,13 @@ FROM ubuntu:16.04
 
 RUN apt-get update \ 
     && apt-get install -y \
+        python3 \
         net-tools \
-        openssh-server \
+        python3-setuptools \
         rsyslog \
         supervisor \
-    && mkdir -p /home/sshgrid/.ssh /var/run/sshd \
-    && useradd sshgrid
-
-COPY sshd_config /etc/ssh/sshd_config
+    && pip3 install asyncssh
+        
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 22

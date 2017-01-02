@@ -43,6 +43,7 @@ services:
      - "results:/results"
      - "/var/run/docker.sock:/var/run/docker.sock"
      - "sshgrid:/sshgrid"
+     - "./images/makeproject/boinc2docker/bin/boinc2docker_create_work.py:/root/project/bin/boinc2docker_create_work.py"
     ports: 
      - "80:80"
     tty: true
@@ -58,6 +59,7 @@ services:
      - mysql
     volumes: 
      - "sshgrid:/sshgrid"
+     - "./images/sshgrid/updater.py:/root/updater.py"
     ports: 
      - "422:22"
     tty: true
