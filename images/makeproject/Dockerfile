@@ -40,6 +40,7 @@ RUN cd /root/boinc/tools \
            -e 's/Allow from all/Require all granted/g' \
            -e '/Order/d' $PROJHOME/boincserver.httpd.conf \
     && echo "admin:zJiQQ3OoIfehM" > $PROJHOME/html/ops/.htpasswd \
+    && chmod g+w $PROJHOME/download \
     && rm -r $PROJHOME/log_boincserver
 
 # project files
