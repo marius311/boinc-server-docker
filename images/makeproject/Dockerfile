@@ -28,7 +28,7 @@ ENV USER=root PROJHOME=/root/project
 
 # make project
 RUN cd /root/boinc/tools \
-    && ./make_project --url_base http://www.boincserver.com \
+    && ./make_project --url_base http://127.0.0.1 \
                       --project_host boincserver \
                       --db_host mysql \
                       --db_user root \

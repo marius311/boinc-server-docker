@@ -36,7 +36,7 @@ rm-apache:
 	$(DC) stop apache && $(DC) rm -f apache
 
 exec-apache:
-	docker exec -it $(shell $(DC) ps -q apache) bash
+	$(DC) exec apache bash
 
 
 # --- mysql ---

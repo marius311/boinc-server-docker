@@ -22,14 +22,14 @@ You might want to do this if your application only compiles on Windows or Mac, o
 If you are hosting your server on a Linux machine, the requirements are,
 
 * [Docker](https://docs.docker.com/engine/installation/) (>=1.10)
-* [docker-compose](https://docs.docker.com/compose/install/) (>=1.6)
+* [docker-compose](https://docs.docker.com/compose/install/) (>=1.7)
 * git
 
 (Note that Docker requires a Linux kernel newer than version 3.10)
 
 If you are hosting your server on Windows/Mac, the requirements are,
 
-* [Docker Toolbox](https://www.docker.com/products/docker-toolbox)  (>=1.10)
+* [Docker Toolbox](https://www.docker.com/products/docker-toolbox)  (>=1.11)
 
 There are no other dependencies, as everything else is packaged inside of Docker. 
 
@@ -77,21 +77,20 @@ If you wish to get a shell inside your server (sort of like ssh'ing into it), ru
 
 #### Accessing the webpage / connecting a client
 
-Docker maps the apache container's port 80 (where the webpage is being served and where incoming client connections are accepted) to port 80 on the machine which is running the container. To see the server webpage, point a web-browser to this machine's IP address. If you are running locally, e.g. on your laptop, this will be `127.0.0.1`. If you are running on a remote server, this will be the server's IP address or domain name. 
+BOINC servers have their URL hardcoded, and will not function correctly unless they are actually accessible from this URL on the comuter your are testing them from. By default, `boinc-server-docker` takes server URL to be `127.0.0.1`, i.e. localhost. 
 
-One detail that makes things slightly more complicated is that BOINC servers have their URL hardcoded. For example, the URL for our test server is by default `www.boincserver.com`. If, on the computer which we are trying to access the server from, the domain name `www.boincserver.com` doesn't resolve to the IP address where the apache container is actually running, *parts of the server will not be fully functioning.* 
-
-On Linux, you can forward the domain name to the appropriate IP address by editing the file `/etc/hosts` and adding the line, 
+If you're are running `docker` via `docker-machine` (like on Mac or Windows), then `docker` is actually running inside a VM and the server is attached to the VM's network interface, not localhost. You can forward the necessary port on localhost to the VM with the following commmand:
 
 ```
-127.0.0.1   www.boincserver.com
+sudo ssh docker@$(docker-machine ip) -L 80:localhost:80 -N
 ```
 
-(or with `127.0.0.1` replaced by the IP address of the remote server which is running your containers). 
+(when prompted, the password is `tcuser`). The fowarding will be active until you interrupt the above command.
 
-On Windows/Mac, instead of `127.0.0.1`, use the IP address reported by the Docker Quickstart Terminal on startup. Additionally, on Windows the file is located at `C:\Windows\system32\drivers\etc\hosts`. 
+If you are running the server somewhere remotely, you will have to set up the necessary extra port forwarding manually, or alternatively you can change the server URL from the default to the one at which the remote server is accessible.
 
-With this change made, your BOINC server is now 100% fully functioning, its webpage can be accessed at `www.boincserver.com/boincserver`, and it is ready to accept connections from clients and submission of jobs. 
+
+At this point, your BOINC server is now 100% fully functioning, its webpage can be accessed at `http://127.0.0.1/boincserver`, and it is ready to accept connections from clients and submission of jobs. 
 
 
 ### Running jobs
