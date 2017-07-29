@@ -82,10 +82,10 @@ BOINC servers have their URL hardcoded, and will not function correctly unless t
 If you're are running `docker` via `docker-machine` (like on Mac or Windows), then `docker` is actually running inside a VM and the server is attached to the VM's network interface, not localhost. You can forward the necessary port on localhost to the VM with the following commmand:
 
 ```
-sudo ssh docker@$(docker-machine ip) -L 80:localhost:80 -N
+ssh docker@$(docker-machine ip) -L 80:localhost:80 -N
 ```
 
-(when prompted, the password is `tcuser`). The fowarding will be active until you interrupt the above command.
+(when prompted, the password is `tcuser`; also, if you're doing this on Mac/Linux you probably need to run this with `sudo`). The forwarding will be active until you interrupt the above command.
 
 If you are running the server somewhere remotely, you will have to set up the necessary extra port forwarding manually, or alternatively you can change the server URL from the default to the one at which the remote server is accessible.
 
