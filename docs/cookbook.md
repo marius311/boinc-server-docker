@@ -59,11 +59,14 @@ cd boinc-server-docker
 and then run,
 
 ```bash
-docker-compose pull
-docker-compose up -d
+sudo docker-compose pull
+sudo docker-compose up -d
 ```
 
-You now have a running BOINC server!  (*Note:* the first time you run this about ~1GB of data will be downloaded as the `boinc-server-docker` images are pulled from the Docker Hub)
+*Note:* Make sure your user is added to the `docker` group, otherwise the `docker-compose` and `docker` commands in this guide need to be run with `sudo`. 
+
+You now have a running BOINC server! Note, the first time you run this about ~1GB of data will be downloaded as the `boinc-server-docker` images are pulled from the Docker Hub
+
 
 The server is made up of three Docker images,
 
@@ -106,7 +109,7 @@ docker run python:alpine python -c "print('Hello BOINC')"
 ```
 and it would print the string "Hello BOINC". 
 
-Suppose you wanted to run this as a BOINC job. To do so, first get a shell inside your server with `docker exec -it boincserverdocker_apache_1 bash` and from the project directory run, 
+Suppose you wanted to run this as a BOINC job. To do so, first get a shell inside your server with `docker-compose exec apache bash` and from the project directory run, 
 
 ```bash
 root@boincserver:~/project# bin/boinc2docker_create_work.py \
@@ -115,7 +118,11 @@ root@boincserver:~/project# bin/boinc2docker_create_work.py \
 
 Like you see, the script `bin/boinc2docker_create_work.py` takes the same arguments as `docker run` but instead of running the container, it creates a job on your server which runs the container on the volunteer's computer. 
 
-If you now connect a client to your server, it will download and run this job, and you will see "Hello BOINC" in the log file which is returned to the server after the job is finished. If your jobs have output files, `boinc2docker` provides a special folder for this, `/root/shared/results`; any files written to this directory are automatically tar'ed up and returned as a BOINC result file. For example, if you ran the job, 
+If you now connect a client to your server, it will download and run this job, and you will see "Hello BOINC" in the log file which is returned to the server after the job is finished. 
+
+Note that to run these types of Docker-based jobs, the client computer will need 64bit [Virtualbox](https://www.virtualbox.org/wiki/Downloads) installed and "virtualization" enabled in the BIOS. 
+
+If your jobs have output files, `boinc2docker` provides a special folder for this, `/root/shared/results`; any files written to this directory are automatically tar'ed up and returned as a BOINC result file. For example, if you ran the job, 
 
 ```bash
 root@boincserver:~/project# bin/boinc2docker_create_work.py \

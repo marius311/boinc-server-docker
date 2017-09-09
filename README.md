@@ -29,11 +29,13 @@ docker-compose pull
 docker-compose up -d
 ```
 
+*Note:* Make sure your user is added to the `docker` group, otherwise the `docker-compose` and `docker` commands in this guide need to be run with `sudo`. 
+
 On Windows, Mac, or Linux if running Docker via docker-machine instead of natively, you will also need to run `ssh docker@$(docker-machine ip) -L 80:localhost:80 -N` and enter `tcuser` when prompted for a password (on Mac/Linux, this command needs to be run with `sudo`).
 
 You can now visit the server webpage and connect clients to the server at  http://127.0.0.1/boincserver. 
 
-The server comes pre-configured to immediately run Docker-based science applications. To do so, first create a Docker container which runs your code. As an example, we will use an unmodified `python:alpine` image. Suppose your calculation is run with the following command,
+The server comes pre-configured to immediately run Docker-based science applications. To do so, first create a Docker container which runs your code. As an example, we will use a `python:alpine` image. Suppose your calculation is run with the following command,
 
 ```bash
 docker run python:alpine python -c "print('Hello BOINC')"
@@ -50,6 +52,8 @@ Then submit the job by running
 ```bash
 bin/boinc2docker_create_work.py python:alpine python -c "print('Hello BOINC')"
 ```
+
+Now you can connect a BOINC client the server and run this job. Note that to run these types of Docker-based jobs, the client computer will need 64bit [Virtualbox](https://www.virtualbox.org/wiki/Downloads) installed and "virtualization" enabled in the BIOS. 
 
 If your job has output files, have the container write them in `/root/shared/results` and they are automatically returned to the server when the job is done. 
 
