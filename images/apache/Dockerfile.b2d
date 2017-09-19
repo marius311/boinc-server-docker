@@ -1,14 +1,20 @@
-FROM php:5.6.17-apache
+FROM php:5.6.31-apache
 
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
+
+#add dependent packages
+RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >/tmp/jessie-backports.list
+RUN cp /tmp/jessie-backports.list /etc/apt/sources.list.d/
+RUN rm /tmp/jessie-backports.list
+
+#install libssl
+RUN apt-get update && apt-get install -y -t jessie-backports libssl1.0.0
 
 #install packages 
 RUN apt-get update && apt-get install -y \
         cron \
         libjpeg62-turbo-dev \
         libpng12-dev \
-        libssl1.0.0 \
-        openssl \
         mysql-client \
         nano \
         python \
@@ -18,9 +24,6 @@ RUN apt-get update && apt-get install -y \
         wget \
     && wget https://git.io/psysh -O /usr/bin/psysh \
     && chmod +x /usr/bin/psysh
-
-#upgrade old packages
-RUN apt-get upgrade -y
 
 #configure server
 RUN docker-php-ext-install mysqli \
