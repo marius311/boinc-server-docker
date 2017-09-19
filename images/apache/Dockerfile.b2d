@@ -19,6 +19,9 @@ RUN apt-get update && apt-get install -y \
     && wget https://git.io/psysh -O /usr/bin/psysh \
     && chmod +x /usr/bin/psysh
 
+#upgrade old packages
+RUN apt-get upgrade -y
+
 #configure server
 RUN docker-php-ext-install mysqli \
     && docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ \
