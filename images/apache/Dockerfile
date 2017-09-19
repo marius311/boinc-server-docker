@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
         libjpeg62-turbo-dev \
         libpng12-dev \
         libssl1.0.0 \
+        openssl \
         mysql-client \
         nano \
         python \
