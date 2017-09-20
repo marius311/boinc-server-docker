@@ -2,6 +2,16 @@ FROM debian:jessie
 
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
 
+#add dependent packages
+RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >/tmp/jessie-backports.list
+RUN cp /tmp/jessie-backports.list /etc/apt/sources.list.d/
+RUN rm /tmp/jessie-backports.list
+
+#install libssl and openssl
+RUN apt-get update && apt-get install -y -t jessie-backports \
+        libssl-dev \
+        openssl
+
 # install necessary packages
 RUN apt-get update && apt-get install -y \
         curl \
@@ -9,7 +19,6 @@ RUN apt-get update && apt-get install -y \
         git \
         libcurl4-gnutls-dev \
         libmysqlclient-dev \
-        libssl-dev \
         m4 \
         make \
         php5-cli \
@@ -17,7 +26,6 @@ RUN apt-get update && apt-get install -y \
         pkg-config \
         python \
         python-mysqldb
-
 
 # get source and compile server
 COPY boinc /root/boinc
