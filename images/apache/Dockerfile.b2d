@@ -7,8 +7,10 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >/tmp/jessie-b
 RUN cp /tmp/jessie-backports.list /etc/apt/sources.list.d/
 RUN rm /tmp/jessie-backports.list
 
-#install libssl
-RUN apt-get update && apt-get install -y -t jessie-backports libssl1.0.0
+#install libssl and openssl
+RUN apt-get update && apt-get install -y -t jessie-backports \
+        libssl1.0.0 \
+        openssl
 
 #install packages 
 RUN apt-get update && apt-get install -y \
