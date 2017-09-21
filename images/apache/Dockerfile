@@ -2,18 +2,10 @@ FROM php:5.6.31-apache
 
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
 
-#add dependent packages
-RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >/tmp/jessie-backports.list
-RUN cp /tmp/jessie-backports.list /etc/apt/sources.list.d/
-RUN rm /tmp/jessie-backports.list
-
-#install libssl and openssl
-RUN apt-get update && apt-get install -y -t jessie-backports \
-        libssl1.0.0 \
-        openssl
-
 #install packages 
-RUN apt-get update && apt-get install -y \
+RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y \
         cron \
         libjpeg62-turbo-dev \
         libpng12-dev \
@@ -24,6 +16,7 @@ RUN apt-get update && apt-get install -y \
         supervisor \
         vim-tiny \
         wget \
+    && apt-get install -y -t jessie-backports openssl \
     && wget https://git.io/psysh -O /usr/bin/psysh \
     && chmod +x /usr/bin/psysh
 
