@@ -3,21 +3,23 @@ FROM debian:jessie
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
 
 # install necessary packages
-RUN apt-get update && apt-get install -y \
+RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y \
         curl \
         dh-autoreconf \
         git \
         libcurl4-gnutls-dev \
         libmysqlclient-dev \
-        libssl-dev \
         m4 \
         make \
         php5-cli \
         php5-mysql \
         pkg-config \
         python \
-        python-mysqldb
-
+        python-mysqldb \
+    && apt-get install -y -t jessie-backports libssl-dev
+        
 
 # get source and compile server
 COPY boinc /root/boinc

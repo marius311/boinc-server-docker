@@ -1,13 +1,14 @@
-FROM php:5.6.17-apache
+FROM php:5.6.31-apache
 
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
 
 #install packages 
-RUN apt-get update && apt-get install -y \
+RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y \
         cron \
         libjpeg62-turbo-dev \
         libpng12-dev \
-        libssl1.0.0 \
         mysql-client \
         nano \
         python \
@@ -15,6 +16,7 @@ RUN apt-get update && apt-get install -y \
         supervisor \
         vim-tiny \
         wget \
+    && apt-get install -y -t jessie-backports openssl \
     && wget https://git.io/psysh -O /usr/bin/psysh \
     && chmod +x /usr/bin/psysh
 
