@@ -5,7 +5,7 @@ MAINTAINER Marius Millea <mariusmillea@gmail.com>
 #install packages 
 RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
     && apt-get update \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends \
         cron \
         libjpeg62-turbo-dev \
         libpng12-dev \
@@ -18,7 +18,8 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/so
         wget \
     && apt-get install -y -t jessie-backports openssl \
     && wget https://git.io/psysh -O /usr/bin/psysh \
-    && chmod +x /usr/bin/psysh
+    && chmod +x /usr/bin/psysh \
+    && rm -rf /var/lib/apt/lists
 
 #configure server
 RUN docker-php-ext-install mysqli \

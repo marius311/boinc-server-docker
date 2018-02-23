@@ -1,13 +1,15 @@
-FROM debian:jessie
+FROM debian:jessie-slim
 
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
 
 # install necessary packages
 RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
     && apt-get update \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
         curl \
         dh-autoreconf \
+        g++ \ 
         git \
         libcurl4-gnutls-dev \
         libmysqlclient-dev \
@@ -18,8 +20,8 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/so
         pkg-config \
         python \
         python-mysqldb \
-    && apt-get install -y -t jessie-backports libssl-dev
-        
+    && apt-get install -y -t jessie-backports libssl-dev \
+    && rm -rf /var/lib/apt/lists
 
 # get source and compile server
 COPY boinc /root/boinc
