@@ -48,6 +48,6 @@ COPY logrotate /etc/logrotate.d/boincserver
 RUN chmod 644 /etc/logrotate.d/boincserver
 
 #set up supervisor to run
-COPY start_project /usr/bin/start_project
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY start_project.sh /usr/bin/
+COPY supervisord.conf /etc/supervisor/conf.d/
 CMD ["/usr/bin/supervisord"]
