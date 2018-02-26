@@ -7,6 +7,7 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/so
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         cron \
+        inotify-tools \
         libjpeg62-turbo-dev \
         libpng12-dev \
         mysql-client \
@@ -38,16 +39,15 @@ RUN rm -rf /root && mkdir /root && chmod 755 /root
 RUN adduser www-data root
 COPY .bashrc /root/.bashrc
 
-#build configuration
-ENV PROJHOME=/root/project
-RUN ln -s $PROJHOME/boincserver.httpd.conf /etc/apache2/sites-enabled/boincserver.httpd.conf 
-WORKDIR $PROJHOME
+# these can't be changed (yet). for variables which *can* be changed, see the .env file
+ENV PROJECT_ROOT=/root/project
+WORKDIR $PROJECT_ROOT
 
 #logrotate
 COPY logrotate /etc/logrotate.d/boincserver
 RUN chmod 644 /etc/logrotate.d/boincserver
 
 #set up supervisor to run
-COPY start_project.sh /usr/bin/
+COPY post-makeproject.sh /usr/bin/
 COPY supervisord.conf /etc/supervisor/conf.d/
 CMD ["/usr/bin/supervisord"]

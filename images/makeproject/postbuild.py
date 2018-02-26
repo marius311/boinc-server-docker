@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 import os
-from os import system as _sh
+from os import chdir, system as _sh
 import os.path as osp
-from os.path import join, basename
+from os.path import join, basename, exists
 import sys
 from time import sleep
 import _mysql_exceptions
@@ -18,12 +18,21 @@ sh = partial(lambda s,l: _sh(s.format(**l)),l=locals())
 
 PROJHOME=os.environ['PROJHOME']
 PROJHOME_DST=PROJHOME+'.dst'
+URL_BASE=join(os.environ['URL_BASE'],'')
 
 
-print "Copying project files to data volume..."
+print "Updating project files in data volume..."
 for f in glob(join(PROJHOME,'*'))+glob(join(PROJHOME,'.*')): 
-    sh('cp -rp "{f}" {PROJHOME_DST}')
+    sh('cp -rpf "{f}" {PROJHOME_DST}')
 sh('rm -rf {PROJHOME}; ln -s {PROJHOME_DST} {PROJHOME}')
+
+
+print "Setting project URL to: "+URL_BASE
+for filename in ["config.xml","html/user/schedulers.txt","boincserver.readme"]:
+    filepath = join(PROJHOME,filename)
+    if exists(filepath):
+        with open(filepath,"r") as f: contents = f.read()
+        with open(filepath,"w") as f: f.write(contents.replace("http://url_base/",URL_BASE))
 
 
 if not '--copy-only' in sys.argv:
@@ -51,13 +60,14 @@ if not '--copy-only' in sys.argv:
             else: 
                 raise
         else:
-            sh('cd {PROJHOME}/html/ops; ./db_schemaversion.php > {PROJHOME}/db_revision')
+            chdir(join(PROJHOME,"html/ops"))
+            sh('./db_schemaversion.php > {PROJHOME}/db_revision')
             break
     if waited: sys.stdout.write('\n')
 
 
     print "Running BOINC update scripts..."
-    os.chdir(PROJHOME)
+    chdir(PROJHOME)
     sh('bin/xadd')
     sh('(%s) | bin/update_versions'%('; '.join(['echo y']*10)))
     

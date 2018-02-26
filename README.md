@@ -4,15 +4,21 @@ boinc-server-docker
 
 `boinc-server-docker` is the easiest way to run your own [BOINC](http://boinc.berkeley.edu/) server. You can run the server on a Linux machine, in which case the requirements are, 
 
-* [Docker](https://github.com/docker/docker/releases) (>=1.10)
-* [docker-compose](https://github.com/docker/compose/releases) (>=1.7.0)
-* git 
+* [Docker](https://docs.docker.com/engine/installation/) (>=17.03.0ce)
+* [docker-compose](https://docs.docker.com/compose/install/) (>=1.13.0 but !=1.19.0 due to a [bug](https://github.com/docker/docker-py/issues/1841))
+* git
 
-or you can run it on Windows 7+ or Mac OSX in which case you will need, 
+or you can run your server on Windows 7+ or Mac OSX, in which case you should use either,
 
-* [Docker Toolbox](https://www.docker.com/products/docker-toolbox)  (>=1.11)
+* [Docker for Mac](https://docs.docker.com/docker-for-mac/install/#download-docker-for-) (>=17.06.0ce)
+* [Docker for Windows](https://docs.docker.com/docker-for-windows/install/) (>=17.06.0ce)
+
+or, if your Windows/Mac system is too old to support either of those,
+
+* [Docker Toolbox](https://docs.docker.com/toolbox/overview) (>=17.05.0ce)
 
 There are no other dependencies, as everything else is packaged inside of Docker. 
+
 
 Documentation
 -------------
@@ -29,11 +35,11 @@ docker-compose pull
 docker-compose up -d
 ```
 
-*Note:* Make sure your user is added to the `docker` group, otherwise the `docker-compose` and `docker` commands in this guide need to be run with `sudo`. 
+You can now visit the server webpage and connect clients to the server at http://127.0.0.1/boincserver. 
 
-On Windows, Mac, or Linux if running Docker via docker-machine instead of natively, you will also need to run `ssh docker@$(docker-machine ip) -L 80:localhost:80 -N` and enter `tcuser` when prompted for a password (on Mac/Linux, this command needs to be run with `sudo`).
+> *Note:* Make sure your user is added to the `docker` group, otherwise the `docker-compose` and `docker` commands in this guide need to be run with `sudo`. 
 
-You can now visit the server webpage and connect clients to the server at  http://127.0.0.1/boincserver. 
+> *Note:* If using Docker Toolbox, replace the final command above with `URL_BASE=$(docker-machine ip) docker-compose up -d`. The server will be accessible at the IP returned by `docker-machine ip` rather than at `127.0.0.1`.
 
 The server comes pre-configured to immediately run Docker-based science applications. To do so, first create a Docker container which runs your code. As an example, we will use a `python:alpine` image. Suppose your calculation is run with the following command,
 

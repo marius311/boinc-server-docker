@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 
 volumes:
   mysql:
@@ -21,19 +21,21 @@ services:
     build: 
       context: images/makeproject
       dockerfile: Dockerfile.b2d
-    hostname: boincserver
     network_mode: bridge
     links: 
      - mysql
     volumes:
      - "project:/root/project.dst"
+    environment:
+     - URL_BASE=$URL_BASE
+     - PROJECT=$PROJECT
 
   apache:
     image: boinc/server_apache:latest-b2d
     build: 
       context: images/apache
       dockerfile: Dockerfile.b2d
-    hostname: boincserver
+    hostname: $PROJECT
     network_mode: bridge
     links:
      - mysql
@@ -44,5 +46,6 @@ services:
     ports: 
      - "80:80"
     tty: true
-
-
+    environment:
+     - URL_BASE=$URL_BASE
+     - PROJECT=$PROJECT
