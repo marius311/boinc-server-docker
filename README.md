@@ -80,6 +80,10 @@ Happy crunching!
 News
 ----
 
+* **Version 2.0.0** - Feb 27, 2018
+    * *New feature:* The server URL and project name can now be changed at run-time with e.g.: `URL_BASE=http//1.2.3.4 PROJECT=myproject docker-compose up -d`. See [here](docs/cookbook.md#server-url) and [here](docs/cookbook.md#custom-configuration-variables) in the Project Cookbook for more details.
+    * *Breaking change:* The `$PROJHOME` variable which was previously available in `apache` and `makeproject` containers has been renamed to `$PROJECT_ROOT` to be consistent with the `make_tools` script, similarly as with `URL_BASE` and `PROJECT`, and in anticipation that it too will become configurable.
+    * Upgraded version requirements.
 * **Version 1.4.1** - July 26, 2017
     * The default server URL is now `http://127.0.0.1/boincserver` rather than previously when it was `http://boincserver.com/boincserver`. This removes the need to edit your `/etc/hosts` file on Linux, and on Windows/Mac/docker-machine replaces having to edit `/etc/hosts` with the SSH tunnel command above. *Related warning: the boincserver.com domain is currently being squatted, so if you're using the old version be careful that you do not type sensitive information into the server website thinking you're interacting with your local test server when in fact it's a remote server at the squatted domain.*
     * Updated docker-compose requirement from 1.6.0 to 1.7.0, and on Windows/Mac, updated Docker Toolbox requirement from 1.10.0 to 1.11.0
