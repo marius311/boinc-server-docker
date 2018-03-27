@@ -28,7 +28,7 @@ This guide will show you how to create your own [BOINC](http://boinc.berkeley.ed
 
 Once you have your server running, there a few ways to develop and run your code on it. This guide describes only the easiest way to do so, which is to use the `boinc2docker` tool that comes preinstalled on `boinc-server-docker`. This will involve packaging your application code inside a Docker container, a fairly simple task which we will describe. It assumes your code runs on Linux, and will automatically allow your code to run on Linux, Mac, and Windows 64bit volunteer computers. 
 
-`boinc-server-docker` was initially developed for [Cosmology@Home](www.cosmologyathome.org). To see an example of a working project which is built on `boinc-server-docker`, see the Cosmology@Home [source code](www.github.com/marius311/cosmohome). 
+`boinc-server-docker` was initially developed for [Cosmology@Home](http://www.cosmologyathome.org). To see an example of a working project which is built on `boinc-server-docker`, see the Cosmology@Home [source code](http://www.github.com/marius311/cosmohome). 
 
 **Note on alternatives**
 
