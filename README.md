@@ -37,9 +37,10 @@ docker-compose up -d
 
 You can now visit the server webpage and connect clients to the server at http://127.0.0.1/boincserver. 
 
-> *Note:* Make sure your user is added to the `docker` group, otherwise the `docker-compose` and `docker` commands in this guide need to be run with `sudo`. 
-
-> *Note:* If using Docker Toolbox, replace the final command above with `URL_BASE=$(docker-machine ip) docker-compose up -d`. The server will be accessible at the IP returned by `docker-machine ip` rather than at `127.0.0.1`.
+> *Notes:* 
+> * The first time you run this, it may take a few minutes after invoking the `docker-compose up -d` command before the server webpage appears. 
+> * Make sure your user is added to the `docker` group, otherwise the `docker-compose` and `docker` commands in this guide need to be run with `sudo`. 
+> * If using Docker Toolbox, replace the final command above with `URL_BASE=$(docker-machine ip) docker-compose up -d`. The server will be accessible at the IP returned by `docker-machine ip` rather than at `127.0.0.1`.
 
 The server comes pre-configured to immediately run Docker-based science applications. To do so, first create a Docker container which runs your code. As an example, we will use a `python:alpine` image. Suppose your calculation is run with the following command,
 

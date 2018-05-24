@@ -90,10 +90,12 @@ docker-compose pull
 docker-compose up -d
 ```
 
-*Note:* Make sure your user is added to the `docker` group, otherwise the `docker-compose` and `docker` commands in this guide need to be run with `sudo`. 
+You now have a running BOINC server! 
 
-You now have a running BOINC server! Note, the first time you run this about ~1GB of data will be downloaded as the `boinc-server-docker` images are pulled from the Docker Hub
-
+> *Notes:* 
+> * The first time you run this, it may take a few minutes after invoking the `docker-compose up -d` command before the server webpage appears. 
+> * Make sure your user is added to the `docker` group, otherwise the `docker-compose` and `docker` commands in this guide need to be run with `sudo`. 
+> * If using Docker Toolbox, replace the final command above with `URL_BASE=$(docker-machine ip) docker-compose up -d`. The server will be accessible at the IP returned by `docker-machine ip` rather than at `127.0.0.1`.
 
 The server is made up of three Docker images,
 
