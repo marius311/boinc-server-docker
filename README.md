@@ -35,7 +35,7 @@ docker-compose pull
 docker-compose up -d
 ```
 
-You can now visit the server webpage and connect clients to the server at http://127.0.0.1/boincserver. 
+Wait a couple of minutes for the services to start and then visit the server webpage and connect clients to the server at http://127.0.0.1/boincserver. 
 
 > *Notes:* 
 > * The first time you run this, it may take a few minutes after invoking the `docker-compose up -d` command before the server webpage appears. 
