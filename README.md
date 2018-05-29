@@ -81,6 +81,8 @@ Happy crunching!
 News
 ----
 
+* **Version 2.1.0** - May 29, 2018
+    * Update boinc to [server_release/0.9](https://github.com/BOINC/boinc/releases/tag/server_release%2F0.9).
 * **Version 2.0.0** - Feb 27, 2018
     * *New feature:* The server URL and project name can now be changed at run-time with e.g.: `URL_BASE=http//1.2.3.4 PROJECT=myproject docker-compose up -d`. See [here](docs/cookbook.md#server-url) and [here](docs/cookbook.md#custom-configuration-variables) in the Project Cookbook for more details.
     * *Breaking change:* The `$PROJHOME` variable which was previously available in `apache` and `makeproject` containers has been renamed to `$PROJECT_ROOT` to be consistent with the `make_tools` script, similarly as with `URL_BASE` and `PROJECT`, and in anticipation that it too will become configurable.
