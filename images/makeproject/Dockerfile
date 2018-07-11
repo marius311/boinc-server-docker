@@ -25,14 +25,14 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/so
     && rm -rf /var/lib/apt/lists
 
 # get source and compile server
-COPY boinc /root/boinc
-RUN cd /root/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
+COPY boinc /usr/local/boinc/software
+RUN cd /usr/local/boinc/software && ./_autosetup && ./configure --disable-client --disable-manager && make
 
 # these can't be changed (yet). for variables which *can* be changed, see the .env file
 ENV USER=root PROJECT_ROOT=/root/project
 
 # make project
-RUN cd /root/boinc/tools \
+RUN cd /usr/local/boinc/software/tools \
     && ./make_project --url_base 'http://${url_host}' \
                       --project_host '${project}' \
                       --db_host mysql \

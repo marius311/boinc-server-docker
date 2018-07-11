@@ -27,14 +27,14 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/so
     && rm -rf /var/lib/apt/lists
 
 # get source and compile server
-COPY boinc /root/boinc
-RUN cd /root/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
+COPY boinc /usr/local/boinc/software
+RUN cd /usr/local/boinc/software && ./_autosetup && ./configure --disable-client --disable-manager && make
 
 # these can't be changed (yet). for variables which *can* be changed, see the .env file
 ENV USER=root PROJECT_ROOT=/root/project
 
 # make project
-RUN cd /root/boinc/tools \
+RUN cd /usr/local/boinc/software/tools \
     && ./make_project --url_base 'http://${url_host}' \
                       --project_host '${project}' \
                       --db_host mysql \
@@ -52,8 +52,8 @@ RUN cd /root/boinc/tools \
     && rm -r $PROJECT_ROOT/log_*
 
 # create boinc2docker app
-COPY boinc2docker /root/boinc2docker
-ENV PATH=/root/boinc2docker:$PATH
+COPY boinc2docker /usr/local/boinc/boinc2docker
+ENV PATH=/usr/local/boinc/boinc2docker:$PATH
 # the vboxwrapper/iso/appver installed will be taken from boinc2docker/boinc2docker.yml
 RUN boinc2docker_create_app --projhome $PROJECT_ROOT
 
