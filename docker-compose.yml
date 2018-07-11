@@ -17,10 +17,10 @@ services:
      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
 
   makeproject:
-    image: boinc/server_makeproject:latest-b2d
+    image: boinc/server_makeproject:latest
     build: 
       context: images/makeproject
-      dockerfile: Dockerfile.b2d
+      dockerfile: Dockerfile
     network_mode: bridge
     links: 
      - mysql
@@ -31,10 +31,10 @@ services:
      - PROJECT=$PROJECT
 
   apache:
-    image: boinc/server_apache:latest-b2d
+    image: boinc/server_apache:latest
     build: 
       context: images/apache
-      dockerfile: Dockerfile.b2d
+      dockerfile: Dockerfile
     hostname: $PROJECT
     network_mode: bridge
     links:
