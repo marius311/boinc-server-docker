@@ -39,9 +39,9 @@ fi
 # create database if it doesn't exist
 if [[ -z $(mysql -h mysql -e "show databases like '$PROJECT'") ]]; then
     echo "Creating database..."
-    PYTHONPATH=/root/boinc/py python -c """
+    PYTHONPATH=/usr/local/boinc/software/py python -c """
 from Boinc import database, configxml
-database.create_database(srcdir='/root/boinc',
+database.create_database(srcdir='/usr/local/boinc/software',
                          config=configxml.ConfigFile(filename='${PROJECT_ROOT}/config.xml').read().config,
                          drop_first=False)
     """

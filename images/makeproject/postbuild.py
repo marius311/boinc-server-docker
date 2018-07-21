@@ -10,7 +10,7 @@ import _mysql_exceptions
 from glob import glob
 from functools import partial
 
-sys.path.append('/root/boinc/py')
+sys.path.append('/usr/local/boinc/software/py')
 import boinc_path_config
 from Boinc import database, configxml
 
@@ -41,7 +41,7 @@ if not '--copy-only' in sys.argv:
     waited=False
     while True:
         try:
-            database.create_database(srcdir='/root/boinc', 
+            database.create_database(srcdir='/usr/local/boinc/software', 
                                      config=configxml.ConfigFile(filename=join(PROJHOME,'config.xml')).read().config, 
                                      drop_first=False)
         except _mysql_exceptions.ProgrammingError as e:
