@@ -1,12 +1,9 @@
 [submodule "images/makeproject/boinc2docker"]
 	path = images/makeproject/boinc2docker
 	url = https://github.com/marius311/boinc2docker.git
-	shallow = true
 [submodule "images/makeproject/boinc"]
 	path = images/makeproject/boinc
 	url = https://github.com/boinc/boinc.git
-	shallow = true
 [submodule "images/makeproject/html/inc/phpmailer"]
 	path = images/makeproject/html/inc/phpmailer
 	url = https://github.com/PHPMailer/PHPMailer.git
-	shallow = true
