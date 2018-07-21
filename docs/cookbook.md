@@ -9,6 +9,7 @@
 	- [Launching a test server](#launching-a-test-server)
 		- [Server URL](#server-url)
 		- [Running jobs](#running-jobs)
+			- [Running without `boinc2docker`](#running-without-boinc2docker)
 	- [Creating your own project](#creating-your-own-project)
 		- [Building and running your server](#building-and-running-your-server)
 		- [Pinning the `boinc-server-docker` version](#pinning-the-boinc-server-docker-version)
@@ -107,6 +108,7 @@ The `docker-compose` program orchestrates Docker applications which involve mult
 
 If you wish to get a shell inside your server (sort of like ssh'ing into it), run `docker-compose exec apache bash`. From here you can run any one-time commands on your server, for example checking the server status (`bin/status`) or submitting some jobs with (`bin/create_work ...`; more on this later). However, remember that only the project folder is a volume, so any changes you make outside of this will disappear the next time you restart the server. In particular, any software installed with `apt-get` will disappear; the correct way to install anything into your server is discussed [later](tbd). 
 
+
 ### Server URL
 
 BOINC servers have their URL hardcoded, and will not function correctly unless they are actually accessible from this URL on the computer your are testing them from. By default, `boinc-server-docker` takes server URL to be `https://127.0.0.1`, i.e. localhost. If you are running Docker natively and testing on your local machine this is the correct URL and you don't need to take any other action. 
@@ -159,6 +161,16 @@ root@boincserver:~/project# bin/boinc2docker_create_work.py \
 which creates a file "hello.txt" with contents "Hello BOINC", your server will receive a result file from the client which is a tar containing this file. BOINC results are stored by `boinc-server-docker` in a volume mounted by default at `/results` in the Apache container. 
 
 Of course, the `python:alpine` image here was just an example, any Docker image will work, including ones you create yourself. 
+
+#### Running without `boinc2docker`
+
+Finally, we note that, although by default the test server comes with `boinc2docker` pre-installed, it can also be removed. To do so, set the `TAG` variable to be empty,
+
+```bash
+TAG="" docker-compose up -d
+```
+
+If you do not specify it, the default tag is `TAG="-b2d"`, which launches the server with `boinc2docker` pre-installed. 
 
 
 ## Creating your own project
