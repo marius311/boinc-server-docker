@@ -1,6 +1,6 @@
 FROM debian:jessie-slim
 
-MAINTAINER Marius Millea <mariusmillea@gmail.com>
+LABEL maintainer="Marius Millea <mariusmillea@gmail.com>"
 
 # install necessary packages
 RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
