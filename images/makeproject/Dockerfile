@@ -2,15 +2,22 @@ FROM debian:jessie-slim
 
 LABEL maintainer="Marius Millea <mariusmillea@gmail.com>"
 
+# these can't be changed (yet). for variables which *can* be changed, see the .env file
+ENV USER=root \
+    PROJECT_ROOT=/root/project
+
 # install necessary packages
 RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
+        # Git Dependencies
+        git \
         ca-certificates \
+        python \
+        # BOINC Dependencies
         curl \
         dh-autoreconf \
-        g++ \ 
-        git \
+        g++ \
         libcurl4-gnutls-dev \
         libmysqlclient-dev \
         m4 \
@@ -19,20 +26,18 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/so
         php5-cli \
         php5-mysql \
         pkg-config \
-        python \
         python-mysqldb \
     && apt-get install -y -t jessie-backports libssl-dev \
-    && rm -rf /var/lib/apt/lists
-
+    && rm -rf /var/lib/apt/lists \
 # get source and compile server
-COPY boinc /root/boinc
-RUN cd /root/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
-
-# these can't be changed (yet). for variables which *can* be changed, see the .env file
-ENV USER=root PROJECT_ROOT=/root/project
-
+    && cd /root \
+    && git clone https://github.com/BOINC/boinc boinc \
+    && cd /root/boinc \
+    && LATEST_BOINC_SERVER_TAG=$(git describe --tags $(git rev-list --tags='server_release*' --max-count=1)) \
+    && git checkout $LATEST_BOINC_SERVER_TAG \
+    && ./_autosetup && ./configure --disable-client --disable-manager && make \
 # make project
-RUN cd /root/boinc/tools \
+    && cd /root/boinc/tools \
     && ./make_project --url_base 'http://${url_host}' \
                       --project_host '${project}' \
                       --db_host mysql \
@@ -47,7 +52,29 @@ RUN cd /root/boinc/tools \
               -e '/Order/d' $PROJECT_ROOT/*.httpd.conf \
     && echo "admin:zJiQQ3OoIfehM" > $PROJECT_ROOT/html/ops/.htpasswd \
     && chmod g+w $PROJECT_ROOT/download \
-    && rm -r $PROJECT_ROOT/log_*
+    && rm -r $PROJECT_ROOT/log_* \
+# Cleaning up
+    && cd /root \
+    && rm -R /root/boinc \
+    && apt-get remove -y \
+        # Git Dependencies
+        git \
+        ca-certificates \
+        python \
+        # BOINC Dependencies
+        curl \
+        dh-autoreconf \
+        g++ \
+        libcurl4-gnutls-dev \
+        libmysqlclient-dev \
+        m4 \
+        make \
+        mysql-client \
+        php5-cli \
+        php5-mysql \
+        pkg-config \
+        python-mysqldb \
+    && apt-get autoremove -y
 
 # project files
 RUN mkdir $PROJECT_ROOT/html/stats_archive
