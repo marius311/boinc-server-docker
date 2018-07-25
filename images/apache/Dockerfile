@@ -1,6 +1,6 @@
 FROM php:5.6.31-apache
 
-MAINTAINER Marius Millea <mariusmillea@gmail.com>
+LABEL maintainer="Marius Millea <mariusmillea@gmail.com>"
 
 #install packages 
 RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
