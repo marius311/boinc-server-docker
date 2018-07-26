@@ -1,5 +1,5 @@
 
-#boinc-server-docker
+# boinc-server-docker
 
 `boinc-server-docker` is the easiest way to run your own [BOINC](http://boinc.berkeley.edu/) server. You can run the server on a Linux machine, in which case the requirements are, 
 
@@ -19,7 +19,7 @@ or, if your Windows/Mac system is too old to support either of those,
 There are no other dependencies, as everything else is packaged inside of Docker. 
 
 
-##Documentation
+## Documentation
 
 For a full tutorial on creating your own server with `boinc-server-docker`, see the [project cookbook](https://github.com/marius311/boinc-server-docker/blob/master/docs/cookbook.md). 
 
@@ -80,7 +80,7 @@ Finally, `boinc-server-docker` is not just useful to get a simple test server ru
 Happy crunching! 
 
 
-##News
+## News
 
 * **Version 2.1.0** - May 29, 2018
     * Update boinc to [server_release/0.9](https://github.com/BOINC/boinc/releases/tag/server_release%2F0.9).
@@ -94,7 +94,7 @@ Happy crunching!
     * A number of improvements to boinc2docker (see [ccfe9a9](https://github.com/marius311/boinc-server-docker/commit/ccfe9a9704b9282f528565c74e07ee3be698aa0d)).
 
 
-##Development and Contributing
+## Development and Contributing
 
 For using `boinc-server-docker` to work on development of the BOINC server soure code, see the [development workflow](docs/dev-workflow.md). 
 
