@@ -7,7 +7,7 @@ cd $PROJECT_ROOT
 while :
 do
 
-    # the first time we build a project, we wait here until the makeproject.sh
+    # the first time we build a project, we wait here until the makeproject-step2.sh
     # script is done
     while [ ! -f .built_${PROJECT} ] ; do sleep 1; done
     
@@ -27,7 +27,7 @@ do
     
     # subsequent times we build a project (such as after a PROJECT change), we
     # go through once then possibly go through again to avoid a race condition
-    # with makeproject.sh
+    # with makeproject-step2.sh
     inotifywait -e attrib .built_${PROJECT}
 done
     

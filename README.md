@@ -23,9 +23,11 @@ There are no other dependencies, as everything else is packaged inside of Docker
 Documentation
 -------------
 
-For a full tutorial on setting up the server, see the [project cookbook](https://github.com/marius311/boinc-server-docker/blob/master/docs/cookbook.md). 
+For a full tutorial on creating your own server with `boinc-server-docker`, see the [project cookbook](https://github.com/marius311/boinc-server-docker/blob/master/docs/cookbook.md). 
 
-If you are somewhat familiar with Docker and BOINC, the following short description takes you through creating a server and running your own science application. 
+If you would like to set up development environment so that you can contribute to the BOINC server source code, see the [development workflow](docs/dev-workflow.md). 
+
+If you are looking to create a server and are already somewhat familiar with Docker and BOINC, the following short description takes you through creating a server and running your own science application. 
 
 To check out this repository and get a test server fully up and running, simply run,
 ```bash
@@ -96,7 +98,8 @@ News
 Development and Contributing
 -----------------------------
 
-To modify and rebuild any of the `boinc-server-docker` images, you will need this git repository's submodules checked out (run `git submodule update --init --recursive`, or clone with `git clone --recursive` in the first place). Note also that currently building the images only works on Linux. 
+For using `boinc-server-docker` to work on development of the BOINC server soure code, see the [development workflow](docs/dev-workflow.md). 
 
+There is developer documentation for `boinc-server-docker` itself, but please feel free to contact the maintainers or submit Issues and Pull Requests for this repository. 
 
-Please don't hesitate to get in contact with the maintainers of this project or to submit pull requests!
+As a reminder, to modify and rebuild any of the `boinc-server-docker` images, you will need this git repository's submodules checked out (run `git submodule update --init --recursive`, or clone with `git clone --recursive` in the first place). Note also that currently building the images only works on Linux. 

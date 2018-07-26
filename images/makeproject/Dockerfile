@@ -32,30 +32,15 @@ RUN cd /root/boinc && ./_autosetup && ./configure --disable-client --disable-man
 ENV USER=root PROJECT_ROOT=/root/project
 
 # make project
-RUN cd /root/boinc/tools \
-    && ./make_project --url_base 'http://${url_host}' \
-                      --project_host '${project}' \
-                      --db_host mysql \
-                      --db_user root \
-                      --no_db \
-                      --no_query \
-                      --project_root $PROJECT_ROOT \
-                      '${project}' \
-    && sed -i -e 's|http://${url_host}|\${url_base}|g' $PROJECT_ROOT/config.xml $PROJECT_ROOT/html/user/schedulers.txt \
-    && sed -i -e 's/Deny from all/Require all denied/g' \
-              -e 's/Allow from all/Require all granted/g' \
-              -e '/Order/d' $PROJECT_ROOT/*.httpd.conf \
-    && echo "admin:zJiQQ3OoIfehM" > $PROJECT_ROOT/html/ops/.htpasswd \
-    && chmod g+w $PROJECT_ROOT/download \
-    && rm -r $PROJECT_ROOT/log_*
+COPY makeproject-step1.sh /usr/bin/
+RUN makeproject-step1.sh
 
 # project files
-RUN mkdir $PROJECT_ROOT/html/stats_archive
 COPY db_dump_spec.xml $PROJECT_ROOT/
 COPY html $PROJECT_ROOT/html
 COPY bin $PROJECT_ROOT/bin
 
 # finish up 
 WORKDIR $PROJECT_ROOT
-COPY makeproject.sh /root/
-CMD /root/makeproject.sh
+COPY makeproject-step2.sh devproject.sh /usr/bin/
+CMD makeproject-step2.sh

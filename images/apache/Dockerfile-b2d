@@ -48,6 +48,6 @@ COPY logrotate /etc/logrotate.d/boincserver
 RUN chmod 644 /etc/logrotate.d/boincserver
 
 #set up supervisor to run
-COPY post-makeproject.sh /usr/bin/
+COPY makeproject-step3.sh /usr/bin/
 COPY supervisord.conf /etc/supervisor/conf.d/
 CMD ["/usr/bin/supervisord"]
