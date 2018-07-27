@@ -35,6 +35,7 @@ services:
      - mysql
     volumes:
      - "project:$PROJECT_ROOT.dst"
+    hostname: makeproject
     environment:
      - URL_BASE
      - PROJECT
