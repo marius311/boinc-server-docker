@@ -15,7 +15,7 @@ Now enter the folder `images/makeproject/boinc` in the root of this repository, 
 Now to recompile the BOINC source with your changes and update the running server, do:
 
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose-dev.yml run makeproject
+docker-compose -f docker-compose.yml -f docker-compose-dev.yml run --rm makeproject
 ```
 
 This will recompile the BOINC code directly in `images/makeproject/boinc`, but will do so in a Docker container so that no dependencies are necessary on your local machine.
@@ -23,7 +23,7 @@ This will recompile the BOINC code directly in `images/makeproject/boinc`, but w
 This above command is equivalent to running the `_autosetup`, `configure`, and `make` commands necessary to compile the server. After the first time, it will be faster to only run `make`, in which case only newly modified files will lead to recompilation:
 
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose-dev.yml run makeproject make
+docker-compose -f docker-compose.yml -f docker-compose-dev.yml run --rm makeproject make
 ```
 
 No extra commands are necessary, as the updated files are automatically updated into your running server containers.
@@ -32,5 +32,5 @@ No extra commands are necessary, as the updated files are automatically updated 
 The location of the local BOINC source which is compiled is controlled by the `BOINC_SRC_DIR` variable, which by default points to `images/makeproject/boinc`. You can change this to point to arbitrary folders on your machine, e.g.:
 
 ```bash
-BOINC_SRC_DIR=/path/to/boinc docker-compose -f docker-compose.yml -f docker-compose-dev.yml run makeproject make
+BOINC_SRC_DIR=/path/to/boinc docker-compose -f docker-compose.yml -f docker-compose-dev.yml run --rm makeproject make
 ```

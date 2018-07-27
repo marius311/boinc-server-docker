@@ -8,44 +8,58 @@ volumes:
 services:
   mysql:
     image: boinc/server_mysql:latest
-    build: images/mysql
+    build: 
+      context: images/mysql
+      args:
+       - BOINC_USER
+       - PROJECT
+       - MYSQL_PASSWORD
     network_mode: bridge
     volumes:
      - "mysql:/var/lib/mysql"
-    environment: 
-     - MYSQL_ROOT_PASSWORD=
-     - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    environment:
+       - MYSQL_ROOT_PASSWORD
+     
 
   makeproject:
     image: boinc/server_makeproject:latest$TAG
     build: 
       context: images/makeproject
       dockerfile: Dockerfile$TAG
+      args:
+       - BOINC_USER
+       - PROJECT_ROOT
+       - MYSQL_PASSWORD
     network_mode: bridge
     links: 
      - mysql
     volumes:
-     - "project:/root/project.dst"
+     - "project:$PROJECT_ROOT.dst"
     environment:
-     - URL_BASE=$URL_BASE
-     - PROJECT=$PROJECT
+     - URL_BASE
+     - PROJECT
+     - PROJECT_ROOT
 
   apache:
     image: boinc/server_apache:latest$TAG
     build: 
       context: images/apache
       dockerfile: Dockerfile$TAG
+      args:
+       - BOINC_USER
+       - PROJECT_ROOT
     hostname: $PROJECT
     network_mode: bridge
     links:
      - mysql
     volumes: 
-     - "project:/root/project"
+     - "project:/home/boincadm/project"
      - "results:/results"
      - "/var/run/docker.sock:/var/run/docker.sock"
     ports: 
      - "80:80"
     tty: true
+    working_dir: $PROJECT_ROOT
     environment:
-     - URL_BASE=$URL_BASE
-     - PROJECT=$PROJECT
+     - URL_BASE
+     - PROJECT

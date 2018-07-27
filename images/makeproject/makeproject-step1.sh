@@ -2,18 +2,19 @@
 
 set -e
 
-cd /root/boinc/tools
+cd $HOME/boinc/tools
 
 ./make_project --url_base 'http://${url_host}' \
                   --project_host '${project}' \
                   --db_host mysql \
-                  --db_user root \
+                  --db_user $BOINC_USER \
+                  --db_passwd $MYSQL_PASSWORD \
                   --no_db \
                   --no_query \
                   --project_root $PROJECT_ROOT \
                   --delete_prev_inst \
                   '${project}'
-                  
+
 sed -i -e 's|http://${url_host}|\${url_base}|g' $PROJECT_ROOT/config.xml $PROJECT_ROOT/html/user/schedulers.txt
 
 sed -i -e 's/Deny from all/Require all denied/g' \

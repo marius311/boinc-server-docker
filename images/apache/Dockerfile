@@ -2,7 +2,7 @@ FROM php:5.6.31-apache
 
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
 
-#install packages 
+# install packages 
 RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -22,28 +22,34 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/so
     && chmod +x /usr/bin/psysh \
     && rm -rf /var/lib/apt/lists
 
-#configure server
+# configure server
 RUN docker-php-ext-install mysqli \
     && docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install gd \
     && a2enmod cgi
+    
+# build args from the docker-compose.yml / .env files
+ARG BOINC_USER
+ARG PROJECT_ROOT
+ENV USER=$BOINC_USER BOINC_USER=$BOINC_USER HOME=/home/$BOINC_USER PROJECT_ROOT=$PROJECT_ROOT
 
-#see https://github.com/docker/docker/issues/14651
-RUN rm -rf /root && mkdir /root && chmod 755 /root
+# set up the non-root user who runs the dameons
+RUN adduser $BOINC_USER --disabled-password --gecos ""
 
-#so that www-data can read/write boinc server files (boinc server runs as root)
-RUN adduser www-data root
-COPY .bashrc /root/.bashrc
+# so that www-data can read/write boinc server files
+RUN adduser www-data $BOINC_USER
 
-# these can't be changed (yet). for variables which *can* be changed, see the .env file
-ENV PROJECT_ROOT=/root/project
-WORKDIR $PROJECT_ROOT
+# a prettier shell
+COPY --chown=1000:1000 .bashrc $HOME/.bashrc
 
-#logrotate
-COPY logrotate /etc/logrotate.d/boincserver
+# logrotate
+COPY --chown=1000:1000 logrotate /etc/logrotate.d/boincserver
 RUN chmod 644 /etc/logrotate.d/boincserver
 
-#set up supervisor to run
+# ensure the project volume has the right permissions when mounted
+RUN mkdir $PROJECT_ROOT && chown $BOINC_USER:$BOINC_USER $PROJECT_ROOT
+
+# set up supervisor to run
 COPY makeproject-step3.sh /usr/bin/
 COPY supervisord.conf /etc/supervisor/conf.d/
 CMD ["/usr/bin/supervisord"]

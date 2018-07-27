@@ -37,12 +37,12 @@ if ! timeout -s KILL 60 mysqladmin ping -h mysql --wait &> /dev/null ; then
 fi
 
 # create database if it doesn't exist
-if [[ -z $(mysql -h mysql -e "show databases like '$PROJECT'") ]]; then
+if [[ -z $(mysql -h mysql -e "show databases like '$PROJECT'" -u $BOINC_USER -p$MYSQL_PASSWORD) ]]; then
     echo "Creating database..."
-    PYTHONPATH=/root/boinc/py python -c """
+    PYTHONPATH=$HOME/boinc/py python -c """
 from Boinc import database, configxml
-database.create_database(srcdir='/root/boinc',
-                         config=configxml.ConfigFile(filename='${PROJECT_ROOT}/config.xml').read().config,
+database.create_database(srcdir='$HOME/boinc',
+                         config=configxml.ConfigFile(filename='$PROJECT_ROOT/config.xml').read().config,
                          drop_first=False)
     """
 fi

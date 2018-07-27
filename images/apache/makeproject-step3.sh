@@ -22,8 +22,11 @@ do
         apache2ctl -k graceful
     fi
     
-    bin/start
-    (echo "PATH=$PATH"; echo "SHELL=/bin/bash"; cat *.cronjob) | crontab
+    # start daemons as $BOINC_USER
+    su $BOINC_USER -c """
+        bin/start
+        (echo "PATH=$PATH"; echo "SHELL=/bin/bash"; cat *.cronjob) | crontab
+    """
     
     # subsequent times we build a project (such as after a PROJECT change), we
     # go through once then possibly go through again to avoid a race condition
