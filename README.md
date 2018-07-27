@@ -70,7 +70,7 @@ This is a simple example, but any Docker containers with arbitrary code installe
 
 To stop the server and delete all server and database files (for example, if you want to start over with a fresh copy), run,
 
-```
+```bash
 docker-compose down -v
 ```
 
@@ -81,6 +81,24 @@ Happy crunching!
 
 
 ## News
+
+* **Version 3.0.0** - July 27, 2018
+    * *Breaking change:* The BOINC daemons no longer run as root, instead they run as an unprivileged user specified by the `BOINC_USER` variable, which is by default equal to `boincadm`. If you created your project with `boinc-server-docker` v2.X.X, you will need to run the following to upgrade your project:
+
+      ```bash
+      source .env
+
+      docker-compose run --rm -u root makeproject \
+          chown -R $BOINC_USER:$BOINC_USER /home/$BOINC_USER/project.dst
+
+      docker-compose run --rm -u root makeproject mysql -h mysql -e \ """ 
+          CREATE USER '$BOINC_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'; 
+          GRANT ALL ON $PROJECT.* TO $BOINC_USER;"""
+      ```
+      Alternatively, if don't care about the data in your project folder and database, you can also just wipe the server clean with `docker-compose down -v` and start a new copy with this latest version.
+    * A new development workflow is added, mainly aimed at BOINC developers. It makes changing the server code and recompiling / rebuiling a project much quicker. See the [development workflow](docs/dev-workflow.md).
+
+    
 
 * **Version 2.1.0** - May 29, 2018
     * Update boinc to [server_release/0.9](https://github.com/BOINC/boinc/releases/tag/server_release%2F0.9).
