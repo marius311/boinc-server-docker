@@ -1,6 +1,5 @@
 
-boinc-server-docker
-===================
+# boinc-server-docker
 
 `boinc-server-docker` is the easiest way to run your own [BOINC](http://boinc.berkeley.edu/) server. You can run the server on a Linux machine, in which case the requirements are, 
 
@@ -20,12 +19,15 @@ or, if your Windows/Mac system is too old to support either of those,
 There are no other dependencies, as everything else is packaged inside of Docker. 
 
 
-Documentation
--------------
+## Documentation
 
-For a full tutorial on setting up the server, see the [project cookbook](https://github.com/marius311/boinc-server-docker/blob/master/docs/cookbook.md). 
+For a full tutorial on creating your own server with `boinc-server-docker`, see the [project cookbook](https://github.com/marius311/boinc-server-docker/blob/master/docs/cookbook.md). 
 
-If you are somewhat familiar with Docker and BOINC, the following short description takes you through creating a server and running your own science application. 
+If you would like to set up development environment so that you can contribute to the BOINC server source code, see the [development workflow](docs/dev-workflow.md). 
+
+If you are looking to create a server and are already somewhat familiar with Docker and BOINC, the following short description takes you through creating a server and running your own science application. 
+
+### Quickstart
 
 To check out this repository and get a test server fully up and running, simply run,
 ```bash
@@ -68,7 +70,7 @@ This is a simple example, but any Docker containers with arbitrary code installe
 
 To stop the server and delete all server and database files (for example, if you want to start over with a fresh copy), run,
 
-```
+```bash
 docker-compose down -v
 ```
 
@@ -78,8 +80,25 @@ Finally, `boinc-server-docker` is not just useful to get a simple test server ru
 Happy crunching! 
 
 
-News
-----
+## News
+
+* **Version 3.0.0** - July 27, 2018
+    * *Breaking change:* The BOINC daemons no longer run as root, instead they run as an unprivileged user specified by the `BOINC_USER` variable, which is by default equal to `boincadm`. If you created your project with `boinc-server-docker` v2.X.X, you will need to run the following to upgrade your project:
+
+      ```bash
+      source .env
+
+      docker-compose run --rm -u root makeproject \
+          chown -R $BOINC_USER:$BOINC_USER /home/$BOINC_USER/project.dst
+
+      docker-compose run --rm -u root makeproject mysql -h mysql -e \ """ 
+          CREATE USER '$BOINC_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'; 
+          GRANT ALL ON $PROJECT.* TO $BOINC_USER;"""
+      ```
+      Alternatively, if don't care about the data in your project folder and database, you can also just wipe the server clean with `docker-compose down -v` and start a new copy with this latest version.
+    * A new development workflow is added, mainly aimed at BOINC developers. It makes changing the server code and recompiling / rebuiling a project much quicker. See the [development workflow](docs/dev-workflow.md).
+
+    
 
 * **Version 2.1.0** - May 29, 2018
     * Update boinc to [server_release/0.9](https://github.com/BOINC/boinc/releases/tag/server_release%2F0.9).
@@ -93,10 +112,10 @@ News
     * A number of improvements to boinc2docker (see [ccfe9a9](https://github.com/marius311/boinc-server-docker/commit/ccfe9a9704b9282f528565c74e07ee3be698aa0d)).
 
 
-Development and Contributing
------------------------------
+## Development and Contributing
 
-To modify and rebuild any of the `boinc-server-docker` images, you will need this git repository's submodules checked out (run `git submodule update --init --recursive`, or clone with `git clone --recursive` in the first place). Note also that currently building the images only works on Linux. 
+For using `boinc-server-docker` to work on development of the BOINC server soure code, see the [development workflow](docs/dev-workflow.md). 
 
+There is developer documentation for `boinc-server-docker` itself, but please feel free to contact the maintainers or submit Issues and Pull Requests for this repository. 
 
-Please don't hesitate to get in contact with the maintainers of this project or to submit pull requests!
+As a reminder, to modify and rebuild any of the `boinc-server-docker` images, you will need this git repository's submodules checked out (run `git submodule update --init --recursive`, or clone with `git clone --recursive` in the first place). Note also that currently building the images only works on Linux. 

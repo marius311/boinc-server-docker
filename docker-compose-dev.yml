@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  makeproject:
+    volumes:
+     - "project:$PROJECT_ROOT.dst"
+     - "$BOINC_SRC_DIR:/home/$BOINC_USER/boinc"
+    working_dir: /home/$BOINC_USER/boinc
+    entrypoint: devproject.sh
+    command: bash -c "./_autosetup && ./configure --disable-manager --disable-client && make"

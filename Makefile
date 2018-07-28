@@ -36,7 +36,7 @@ rm-apache:
 	$(DC) stop apache && $(DC) rm -f apache
 
 exec-apache:
-	$(DC) exec apache bash
+	$(DC) exec -u boincadm apache bash
 
 
 # --- mysql ---
