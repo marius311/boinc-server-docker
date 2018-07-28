@@ -53,8 +53,6 @@ RUN chmod 644 /etc/logrotate.d/boincserver
 # ensure the project volume has the right permissions when mounted
 RUN mkdir $PROJECT_ROOT && chown $BOINC_USER:$BOINC_USER $PROJECT_ROOT
     
-RUN touch /var/run/docker.sock
-
 # set up supervisor to run
 COPY makeproject-step3.sh /usr/bin/
 COPY supervisord.conf /etc/supervisor/conf.d/
