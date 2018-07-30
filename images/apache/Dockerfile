@@ -31,7 +31,11 @@ RUN docker-php-ext-install mysqli \
 # build args from the docker-compose.yml / .env files
 ARG BOINC_USER
 ARG PROJECT_ROOT
-ENV USER=$BOINC_USER BOINC_USER=$BOINC_USER HOME=/home/$BOINC_USER PROJECT_ROOT=$PROJECT_ROOT
+ENV USER=$BOINC_USER \
+    BOINC_USER=$BOINC_USER \
+    HOME=/home/$BOINC_USER \
+    PROJECT_ROOT=$PROJECT_ROOT \
+    MYSQL_HOST=mysql
 
 # set up the non-root user who runs the dameons
 RUN adduser $BOINC_USER --disabled-password --gecos ""

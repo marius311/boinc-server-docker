@@ -50,7 +50,6 @@ RUN makeproject-step1.sh
 # copy in other project files
 COPY --chown=1000 db_dump_spec.xml $PROJECT_ROOT/
 COPY --chown=1000 html $PROJECT_ROOT/html
-COPY --chown=1000 bin $PROJECT_ROOT/bin
 COPY --chown=1000 secrets.env $HOME/secrets
 
 
