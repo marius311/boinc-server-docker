@@ -1,16 +1,11 @@
-FROM mysql:5.7.19
+FROM mariadb:10.3.8-bionic
 
 COPY my.cnf /etc/mysql/conf.d/my.cnf
 
-ARG BOINC_USER
-ARG MYSQL_PASSWORD
-ARG PROJECT
+# removes the part of the script that creates $MYSQL_DATABASE (that's done by
+# makeproject-step2.sh), but keeps the part that grants $BOINC_USER permissions
+# to $MYSQL_DATABASE (this we do want)
+RUN sed -i "/file_env 'MYSQL_DATABASE'/,+5d" /usr/local/bin/docker-entrypoint.sh \
+    && mv /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint-2.sh
 
-ENV MYSQL_USER=$BOINC_USER
-ENV MYSQL_PASSWORD=$MYSQL_PASSWORD
-ENV MYSQL_DATABASE=$PROJECT
-ENV MYSQL_RANDOM_ROOT_PASSWORD=yes
-
-# removes the part of the script that creates $MYSQL_DATABASE, but keeps the
-# part that grants #BOINC_USER permissions to #MYSQL_DATABASE (which we do want)
-RUN sed -i "/file_env 'MYSQL_DATABASE'/,+5d" /usr/local/bin/docker-entrypoint.sh
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

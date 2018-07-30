@@ -53,8 +53,8 @@ rm-mysql:
 
 # --- for local building/testing ---
 
-TAG=$(shell git describe --tags --abbrev=0)
+VER=$(shell git describe --tags --abbrev=0)
 tag:
-	docker tag boinc/server_apache:latest-b2d boinc/server_apache:$(TAG)-b2d
-	docker tag boinc/server_mysql:latest boinc/server_mysql:$(TAG)
-	docker tag boinc/server_makeproject:latest-b2d boinc/server_makeproject:$(TAG)-b2d
+	docker tag boinc/server_apache:latest$(TAG) boinc/server_apache:$(VER)$(TAG)
+	docker tag boinc/server_mysql:latest boinc/server_mysql:$(VER)
+	docker tag boinc/server_makeproject:latest$(TAG) boinc/server_makeproject:$(VER)$(TAG)

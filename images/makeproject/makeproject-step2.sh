@@ -2,14 +2,21 @@
 
 set -e
 
+FILE=/home/$BOINC_USER/secrets/secrets.env && test -f $FILE  && source $FILE
+
 PROJECT_ROOT_DEST=$PROJECT_ROOT.dst
 
 echo "Updating project files in data volume..."
 cd $PROJECT_ROOT
 # do variable substitution in files
-for file in config.xml html/user/schedulers.txt *.httpd.conf; do 
+for file in config.xml html/user/schedulers.txt *.httpd.conf html/project/project.inc; do 
     sed -i -e "s|\${PROJECT}|$PROJECT|gI" \
+           -e "s|\${PROJECT_ROOT}|$PROJECT_ROOT|gI" \
            -e "s|\${URL_BASE}|$URL_BASE|gI" \
+           -e "s|\${DB_PASSWD}|$DB_PASSWD|gI" \
+           -e "s|\${MAILPASS}|$MAILPASS|gI" \
+           -e "s|\${RECAPTCHA_PUBLIC_KEY}|$RECAPTCHA_PUBLIC_KEY|gI" \
+           -e "s|\${RECAPTCHA_PRIVATE_KEY}|$RECAPTCHA_PRIVATE_KEY|gI" \
         $file
 done
 # do variable substitution in file names (although with -n to not overwrite
@@ -37,7 +44,7 @@ if ! timeout -s KILL 60 mysqladmin ping -h mysql --wait &> /dev/null ; then
 fi
 
 # create database if it doesn't exist
-if [[ -z $(mysql -h mysql -e "show databases like '$PROJECT'" -u $BOINC_USER -p$MYSQL_PASSWORD) ]]; then
+if [[ -z $(mysql -h mysql -e "show databases like '$PROJECT'" -u $BOINC_USER -p$DB_PASSWD) ]]; then
     echo "Creating database..."
     PYTHONPATH=$HOME/boinc/py python -c """
 from Boinc import database, configxml

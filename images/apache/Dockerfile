@@ -1,23 +1,23 @@
-FROM php:5.6.31-apache
+FROM php:7.0.31-apache-stretch
 
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
 
 # install packages 
-RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
-    && apt-get update \
+RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         cron \
+        default-mysql-client \
         inotify-tools \
         libjpeg62-turbo-dev \
-        libpng12-dev \
-        mysql-client \
+        libpng-dev \
+        libmariadbclient18 \
         nano \
+        openssl \
         python \
         rsyslog \
         supervisor \
         vim-tiny \
         wget \
-    && apt-get install -y -t jessie-backports openssl \
     && wget https://git.io/psysh -O /usr/bin/psysh \
     && chmod +x /usr/bin/psysh \
     && rm -rf /var/lib/apt/lists
@@ -46,8 +46,8 @@ COPY --chown=1000:1000 .bashrc $HOME/.bashrc
 COPY --chown=1000:1000 logrotate /etc/logrotate.d/boincserver
 RUN chmod 644 /etc/logrotate.d/boincserver
 
-# ensure the project volume has the right permissions when mounted
-RUN mkdir $PROJECT_ROOT && chown $BOINC_USER:$BOINC_USER $PROJECT_ROOT
+# ensure the project/secrets volumes have the right permissions when mounted
+RUN mkdir $PROJECT_ROOT $HOME/secrets && chown $BOINC_USER:$BOINC_USER $PROJECT_ROOT $HOME/secrets
 
 # set up supervisor to run
 COPY makeproject-step3.sh /usr/bin/

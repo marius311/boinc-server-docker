@@ -5,24 +5,38 @@ set -e
 cd $HOME/boinc/tools
 
 ./make_project --url_base 'http://${url_host}' \
-                  --project_host '${project}' \
-                  --db_host mysql \
-                  --db_user $BOINC_USER \
-                  --db_passwd $MYSQL_PASSWORD \
-                  --no_db \
-                  --no_query \
-                  --project_root $PROJECT_ROOT \
-                  --delete_prev_inst \
-                  '${project}'
+               --project_host '${project}' \
+               --db_host mysql \
+               --db_user $BOINC_USER \
+               --db_passwd '${db_passwd}' \
+               --no_db \
+               --no_query \
+               --project_root $PROJECT_ROOT \
+               --delete_prev_inst \
+               '${project}'
 
 sed -i -e 's|http://${url_host}|\${url_base}|g' $PROJECT_ROOT/config.xml $PROJECT_ROOT/html/user/schedulers.txt
 
-sed -i -e 's/Deny from all/Require all denied/g' \
-          -e 's/Allow from all/Require all granted/g' \
-          -e '/Order/d' $PROJECT_ROOT/*.httpd.conf
 
-echo "admin:zJiQQ3OoIfehM" > $PROJECT_ROOT/html/ops/.htpasswd
+sed -i -e 's/Deny from all/Require all denied/g' \
+       -e 's/Allow from all/Require all granted/g' \
+       -e '/Order/d' $PROJECT_ROOT/*.httpd.conf
 
 chmod g+w $PROJECT_ROOT/download
 rm -r $PROJECT_ROOT/log_*
 mkdir $PROJECT_ROOT/html/stats_archive
+
+
+
+# all "secrets" (ie private data, passwords, etc...) are collected and stored in
+# the secrets volume, and the project folder is changed to symlink to these
+SECRETS=$HOME/secrets
+
+# code signing and upload keys
+mv $PROJECT_ROOT/keys $SECRETS
+ln -s $SECRETS/keys $PROJECT_ROOT
+
+# ops password
+mkdir -p $SECRETS/html/ops
+echo "admin:zJiQQ3OoIfehM" > $SECRETS/html/ops/.htpasswd
+ln -s $SECRETS/html/ops/.htpasswd $PROJECT_ROOT/html/ops

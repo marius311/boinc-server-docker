@@ -1,10 +1,9 @@
-FROM debian:jessie-slim
+FROM debian:stretch-slim
 
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
 
 # install necessary packages
-RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
-    && apt-get update \
+RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
@@ -12,23 +11,23 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/so
         g++ \ 
         git \
         libcurl4-gnutls-dev \
-        libmysqlclient-dev \
+        default-libmysqlclient-dev \
+        libssl-dev \
         m4 \
         make \
         mysql-client \
-        php5-cli \
-        php5-mysql \
+        php7.0-cli \
+        php7.0-mysql \
+        php7.0-xml \
         pkg-config \
         python \
         python-mysqldb \
-    && apt-get install -y -t jessie-backports libssl-dev \
     && rm -rf /var/lib/apt/lists
 
 # build args from the docker-compose.yml / .env files
 ARG BOINC_USER
 ARG PROJECT_ROOT
-ARG MYSQL_PASSWORD
-ENV BOINC_USER=$BOINC_USER USER=$BOINC_USER HOME=/home/$BOINC_USER MYSQL_PASSWORD=$MYSQL_PASSWORD
+ENV BOINC_USER=$BOINC_USER USER=$BOINC_USER HOME=/home/$BOINC_USER
 
 # set up the non-root user who compiles the server
 RUN adduser $BOINC_USER --disabled-password --gecos ""
@@ -40,6 +39,9 @@ USER $BOINC_USER
 COPY --chown=1000 boinc $HOME/boinc
 RUN cd $HOME/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
 
+# ensure the project/secrets volumes have the right permissions when mounted
+RUN mkdir $PROJECT_ROOT.dst $HOME/secrets && chown $BOINC_USER:$BOINC_USER $PROJECT_ROOT.dst $HOME/secrets
+
 # this script runs boinc/tools/make_project and does everything else that can be
 # done at Docker build-time (ie without a database)
 COPY makeproject-step1.sh /usr/bin/
@@ -49,9 +51,8 @@ RUN makeproject-step1.sh
 COPY --chown=1000 db_dump_spec.xml $PROJECT_ROOT/
 COPY --chown=1000 html $PROJECT_ROOT/html
 COPY --chown=1000 bin $PROJECT_ROOT/bin
+COPY --chown=1000 secrets.env $HOME/secrets
 
-# ensure the project volume has the right permissions when mounted
-RUN mkdir $PROJECT_ROOT.dst && chown $BOINC_USER:$BOINC_USER $PROJECT_ROOT.dst
 
 # finish up 
 WORKDIR $PROJECT_ROOT
