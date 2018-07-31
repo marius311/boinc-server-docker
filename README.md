@@ -96,7 +96,6 @@ Happy crunching!
           GRANT ALL ON $PROJECT.* TO $BOINC_USER;"""
       ```
       Alternatively, if don't care about the data in your project folder and database, you can also just wipe the server clean with `docker-compose down -v` and start a new copy with this latest version.
-    * A new development workflow is added, mainly aimed at BOINC developers. It makes changing the server code and recompiling / rebuiling a project much quicker. See the [development workflow](docs/dev-workflow.md).
 
     
 
