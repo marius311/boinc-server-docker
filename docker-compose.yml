@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 
 volumes:
   mysql:
@@ -21,7 +21,8 @@ services:
     image: boinc/server_makeproject:latest$TAG
     build: 
       context: images/makeproject
-      dockerfile: Dockerfile$TAG
+      dockerfile: Dockerfile
+      target: makeproject$TAG
       args:
        - BOINC_USER
        - PROJECT_ROOT
@@ -41,7 +42,8 @@ services:
     image: boinc/server_apache:latest$TAG
     build: 
       context: images/apache
-      dockerfile: Dockerfile$TAG
+      dockerfile: Dockerfile
+      target: apache$TAG
       args:
        - BOINC_USER
        - PROJECT_ROOT

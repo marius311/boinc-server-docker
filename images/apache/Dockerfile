@@ -1,4 +1,6 @@
-FROM php:7.0.31-apache-stretch
+#=======================================
+FROM php:7.0.31-apache-stretch as apache
+#=======================================
 
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
 
@@ -31,10 +33,10 @@ RUN docker-php-ext-install mysqli \
 # build args from the docker-compose.yml / .env files
 ARG BOINC_USER
 ARG PROJECT_ROOT
-ENV USER=$BOINC_USER \
-    BOINC_USER=$BOINC_USER \
-    HOME=/home/$BOINC_USER \
+ENV BOINC_USER=$BOINC_USER \
     PROJECT_ROOT=$PROJECT_ROOT \
+    USER=$BOINC_USER \
+    HOME=/home/$BOINC_USER \
     MYSQL_HOST=mysql
 
 # set up the non-root user who runs the dameons
@@ -57,3 +59,13 @@ RUN mkdir $PROJECT_ROOT $HOME/secrets && chown $BOINC_USER:$BOINC_USER $PROJECT_
 COPY makeproject-step3.sh /usr/bin/
 COPY supervisord.conf /etc/supervisor/conf.d/
 CMD ["/usr/bin/supervisord"]
+
+
+
+#========================
+FROM apache as apache-b2d
+#========================
+
+# install Docker client
+RUN curl -L http://get.docker.com/builds/Linux/x86_64/docker-1.10.3 > /usr/bin/docker \
+    && chmod +x /usr/bin/docker

@@ -3,18 +3,18 @@
 
 `boinc-server-docker` is the easiest way to run your own [BOINC](http://boinc.berkeley.edu/) server. You can run the server on a Linux machine, in which case the requirements are, 
 
-* [Docker](https://docs.docker.com/engine/installation/) (>=17.03.0ce)
-* [docker-compose](https://docs.docker.com/compose/install/) (>=1.13.0 but !=1.19.0 due to a [bug](https://github.com/docker/docker-py/issues/1841))
+* [Docker](https://docs.docker.com/engine/installation/) (>=17.09.0ce)
+* [docker-compose](https://docs.docker.com/compose/install/) (>=1.17.0 but !=1.19.0 due to a [bug](https://github.com/docker/docker-py/issues/1841))
 * git
 
 or you can run your server on Windows 7+ or Mac OSX, in which case you should use either,
 
-* [Docker for Mac](https://docs.docker.com/docker-for-mac/install/#download-docker-for-) (>=17.06.0ce)
-* [Docker for Windows](https://docs.docker.com/docker-for-windows/install/) (>=17.06.0ce)
+* [Docker for Mac](https://docs.docker.com/docker-for-mac/install/#download-docker-for-) (>=17.09.0ce)
+* [Docker for Windows](https://docs.docker.com/docker-for-windows/install/) (>=17.09.0ce)
 
 or, if your Windows/Mac system is too old to support either of those,
 
-* [Docker Toolbox](https://docs.docker.com/toolbox/overview) (>=17.05.0ce)
+* [Docker Toolbox](https://docs.docker.com/toolbox/overview) (>=17.09.0ce)
 
 There are no other dependencies, as everything else is packaged inside of Docker. 
 

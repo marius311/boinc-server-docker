@@ -2,7 +2,10 @@
 
 set -e
 
-FILE=/home/$BOINC_USER/secrets/secrets.env && test -f $FILE  && source $FILE
+# source additional secrets if they're present
+SECRETS_ENV=/home/$BOINC_USER/secrets/secrets.env
+test -f $SECRETS_ENV && source $SECRETS_ENV
+
 
 PROJECT_ROOT_DEST=$PROJECT_ROOT.dst
 
