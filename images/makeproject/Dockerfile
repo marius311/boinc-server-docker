@@ -5,7 +5,7 @@ ARG TAG
 FROM debian:stretch-slim AS base
 #===============================
 
-MAINTAINER Marius Millea <mariusmillea@gmail.com>
+LABEL maintainer="Marius Millea <mariusmillea@gmail.com>"
 
 # install packages
 RUN apt-get update \
