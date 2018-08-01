@@ -2,10 +2,7 @@
 
 set -e
 
-# source additional secrets if they're present
-SECRETS_ENV=/home/$BOINC_USER/secrets/secrets.env
-test -f $SECRETS_ENV && source $SECRETS_ENV
-
+source /run/secrets/secrets.env
 
 PROJECT_ROOT_DEST=$PROJECT_ROOT.dst
 
@@ -49,9 +46,9 @@ fi
 # create database if it doesn't exist
 if [[ -z $(mysql -h mysql -e "show databases like '$PROJECT'" -u $BOINC_USER -p$DB_PASSWD) ]]; then
     echo "Creating database..."
-    PYTHONPATH=$HOME/boinc/py python -c """
+    PYTHONPATH=/usr/local/boinc/py python -c """
 from Boinc import database, configxml
-database.create_database(srcdir='$HOME/boinc',
+database.create_database(srcdir='/usr/local/boinc',
                          config=configxml.ConfigFile(filename='$PROJECT_ROOT/config.xml').read().config,
                          drop_first=False)
     """

@@ -53,7 +53,8 @@ rm-mysql:
 
 # --- for local building/testing ---
 
-VER=$(shell git describe --tags --abbrev=0)
+VER = $(shell git describe --tags --abbrev=0)
+TAG ?= $(shell bash -c 'source .env && echo $$TAG')	
 tag:
 	docker tag boinc/server_apache:latest$(TAG) boinc/server_apache:$(VER)$(TAG)
 	docker tag boinc/server_mysql:latest boinc/server_mysql:$(VER)

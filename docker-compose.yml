@@ -8,58 +8,61 @@ volumes:
 
 services:
   mysql:
-    image: boinc/server_mysql:latest
-    build: images/mysql
+    image: boinc/server_mysql:$VERSION$DEFAULTARGS
+    build: 
+      context: images/mysql
+      target: mysql$DEFAULTARGS
+      args:
+        - BOINC_USER
+        - PROJECT
     network_mode: bridge
     volumes:
-     - "mysql:/var/lib/mysql"
-    environment:
-       - BOINC_USER
-       - PROJECT
+      - "mysql:/var/lib/mysql"
+      - "secrets:/run/secrets"
 
   makeproject:
-    image: boinc/server_makeproject:latest$TAG
+    image: boinc/server_makeproject:$VERSION$TAG$DEFAULTARGS
     build: 
       context: images/makeproject
-      dockerfile: Dockerfile
-      target: makeproject$TAG
+      target: makeproject$DEFAULTARGS
       args:
-       - BOINC_USER
-       - PROJECT_ROOT
+        - TAG
+        - BOINC_USER
+        - PROJECT_ROOT
     network_mode: bridge
     links: 
-     - mysql
+      - mysql
     volumes:
-     - "project:$PROJECT_ROOT.dst"
-     - "secrets:/home/$BOINC_USER/secrets"
+      - "project:$PROJECT_ROOT.dst"
+      - "secrets:/run/secrets"
     hostname: makeproject
     environment:
-     - URL_BASE
-     - PROJECT
-     - PROJECT_ROOT
+      - URL_BASE
+      - PROJECT
+      - PROJECT_ROOT
 
   apache:
-    image: boinc/server_apache:latest$TAG
+    image: boinc/server_apache:$VERSION$TAG$DEFAULTARGS
     build: 
       context: images/apache
-      dockerfile: Dockerfile
-      target: apache$TAG
+      target: apache$DEFAULTARGS
       args:
-       - BOINC_USER
-       - PROJECT_ROOT
+        - TAG
+        - BOINC_USER
+        - PROJECT_ROOT
     hostname: $PROJECT
     network_mode: bridge
     links:
-     - mysql
+      - mysql
     volumes: 
-     - "project:/home/boincadm/project"
-     - "results:/results"
-     - "/var/run/docker.sock:/var/run/docker.sock"
-     - "secrets:/home/$BOINC_USER/secrets"
+      - "project:/home/$BOINC_USER/project"
+      - "results:/results"
+      - "secrets:/run/secrets"
+      - "/var/run/docker.sock:/var/run/docker.sock"
     ports: 
-     - "80:80"
+      - "80:80"
     tty: true
     working_dir: $PROJECT_ROOT
     environment:
-     - URL_BASE
-     - PROJECT
+      - URL_BASE
+      - PROJECT

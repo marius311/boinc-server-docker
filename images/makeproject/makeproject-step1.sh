@@ -2,7 +2,7 @@
 
 set -e
 
-cd $HOME/boinc/tools
+cd /usr/local/boinc/tools
 
 ./make_project --url_base 'http://${url_host}' \
                --project_host '${project}' \
@@ -28,9 +28,9 @@ mkdir $PROJECT_ROOT/html/stats_archive
 
 
 
-# all "secrets" (ie private data, passwords, etc...) are collected and stored in
-# the secrets volume, and the project folder is changed to symlink to these
-SECRETS=$HOME/secrets
+# collect "secrets" (ie passwords, signing keys, etc...) from the project folder
+# and put them in the secrets volume, and add symlinks in their place
+SECRETS=/run/secrets
 
 # code signing and upload keys
 mv $PROJECT_ROOT/keys $SECRETS

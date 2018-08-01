@@ -1,10 +1,13 @@
+# the tag this Dockerfile will build, either "-b2d" or ""
+ARG TAG
+
 #===============================
-FROM debian:stretch-slim as base
+FROM debian:stretch-slim AS base
 #===============================
 
 MAINTAINER Marius Millea <mariusmillea@gmail.com>
 
-# install necessary packages
+# install packages
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -26,64 +29,33 @@ RUN apt-get update \
         python-mysqldb \
     && rm -rf /var/lib/apt/lists
 
-# build args from the docker-compose.yml / .env files
-ARG BOINC_USER
-ARG PROJECT_ROOT
-ENV BOINC_USER=$BOINC_USER \
-    PROJECT_ROOT=$PROJECT_ROOT \
-    USER=$BOINC_USER \
-    HOME=/home/$BOINC_USER
-
-
-
-#=======================
-FROM base as makeproject
-#=======================
-
-# set up the non-root user who compiles the server
-RUN adduser $BOINC_USER --disabled-password --gecos ""
-USER $BOINC_USER
-
 # get source and compile server 
-# TODO: use `--chown=$BOINC_USER` instead of hardcoding the uid, once that
-# feature is added to Docker (https://github.com/moby/moby/issues/35018)
-COPY --chown=1000 boinc $HOME/boinc
-RUN cd $HOME/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
-
-# ensure the project/secrets volumes have the right permissions when mounted
-RUN mkdir $PROJECT_ROOT.dst $HOME/secrets && chown $BOINC_USER:$BOINC_USER $PROJECT_ROOT.dst $HOME/secrets
+COPY --chown=1000 boinc /usr/local/boinc
+RUN cd /usr/local/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
 
 # first step of the project-making script, which does everything else that can
 # be done at Docker build-time (ie without a database)
-COPY makeproject-step1.sh /usr/bin/
-RUN makeproject-step1.sh
+COPY makeproject-step1.sh makeproject-step2.sh /usr/local/bin/
 
-# copy in other project files
-COPY --chown=1000 db_dump_spec.xml $PROJECT_ROOT/
-COPY --chown=1000 html $PROJECT_ROOT/html
-COPY --chown=1000 secrets.env $HOME/secrets
+# some other project files (some which will be put in the correct place with
+# ONBUILD instructions later)
+COPY --chown=1000 db_dump_spec.xml /.project_root/
+COPY --chown=1000 html /.project_root/html/
+COPY --chown=1000 secrets.env /run/secrets/
 
-# finish up 
-WORKDIR $PROJECT_ROOT
-COPY makeproject-step2.sh /usr/bin/
-CMD makeproject-step2.sh
+#==============================
+FROM debian:stretch-slim AS b2d
+#==============================
 
-
-
-#===============
-FROM base as b2d
-#===============
-
-# do boinc2docker as a separate layer so we don't have to keep re-downloading
+# do boinc2docker as a separate target so we don't have to keep re-downloading
 # things whenever the build cache is invalidated
 
-USER root
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         python-yaml \
         wget
-        
+
 # the version of vboxwrapper/iso/appver installed is specified in
 # boinc2docker/boinc2docker.yml
 COPY boinc2docker /root/boinc2docker
@@ -91,20 +63,61 @@ RUN /root/boinc2docker/boinc2docker_create_app --download_only
 
 
 
-#==================================
-FROM makeproject as makeproject-b2d
-#==================================
+#====================
+FROM base AS base-b2d
+#====================
 
 # copy/install extra things needed for the `-b2d` version
 
-USER root
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         python-yaml \
         wget \
     && rm -rf /var/lib/apt/lists
-USER $BOINC_USER
 
 COPY --from=b2d --chown=1000 /root/boinc2docker $HOME/boinc2docker 
 ENV PATH=$HOME/boinc2docker:$PATH
-RUN boinc2docker_create_app --projhome $HOME/project
+
+
+
+#===========================
+FROM base$TAG AS makeproject
+#===========================
+
+# everything which depends on build-args is done as ONBUILD in this stage, so
+# the user can customize it
+
+ONBUILD ARG TAG
+ONBUILD ARG BOINC_USER
+ONBUILD ARG PROJECT_ROOT
+ONBUILD ENV BOINC_USER=$BOINC_USER \
+            PROJECT_ROOT=$PROJECT_ROOT \
+            USER=$BOINC_USER \
+            HOME=/home/$BOINC_USER \
+            MYSQL_HOST=mysql
+    
+# set up the non-root user who compiles the server
+ONBUILD RUN adduser $BOINC_USER --disabled-password --gecos ""
+
+# ensure the project/secrets volumes have the right permissions when mounted
+ONBUILD RUN mkdir $PROJECT_ROOT.dst && chown $BOINC_USER:$BOINC_USER $PROJECT_ROOT.dst
+
+ONBUILD USER $BOINC_USER
+
+ONBUILD RUN cp -rT /.project_root $PROJECT_ROOT && rm -rf /.project_root/*
+
+# build server
+ONBUILD RUN makeproject-step1.sh
+ONBUILD RUN test -z "$TAG" || boinc2docker_create_app --projhome $HOME/project
+ONBUILD CMD makeproject-step2.sh
+
+ONBUILD WORKDIR $PROJECT_ROOT
+
+
+
+#==========================================
+FROM makeproject AS makeproject-defaultargs
+#==========================================
+
+# this triggers the ONBUILD directives using the default ARGs so we also get a
+# fully built example image
