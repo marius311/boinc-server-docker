@@ -1,10 +1,14 @@
-FROM debian:jessie-slim
+# the tag this Dockerfile will build, either "-b2d" or ""
+ARG TAG
+
+#===============================
+FROM debian:stretch-slim AS base
+#===============================
 
 LABEL maintainer="Marius Millea <mariusmillea@gmail.com>"
 
-# install necessary packages
-RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/sources.list \
-    && apt-get update \
+# install packages
+RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
@@ -12,50 +16,106 @@ RUN echo 'deb http://ftp.debian.org/debian jessie-backports main' >> /etc/apt/so
         g++ \ 
         git \
         libcurl4-gnutls-dev \
-        libmysqlclient-dev \
+        default-libmysqlclient-dev \
+        libssl-dev \
         m4 \
         make \
         mysql-client \
-        php5-cli \
-        php5-mysql \
+        php7.0-cli \
+        php7.0-mysql \
+        php7.0-xml \
         pkg-config \
         python \
         python-mysqldb \
-    && apt-get install -y -t jessie-backports libssl-dev \
     && rm -rf /var/lib/apt/lists
 
-# get source and compile server
-COPY boinc /root/boinc
-RUN cd /root/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
+# get source and compile server 
+COPY --chown=1000 boinc /usr/local/boinc
+RUN cd /usr/local/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
 
-# these can't be changed (yet). for variables which *can* be changed, see the .env file
-ENV USER=root PROJECT_ROOT=/root/project
+# project-making scripts
+COPY makeproject-step1.sh makeproject-step2.sh /usr/local/bin/
 
-# make project
-RUN cd /root/boinc/tools \
-    && ./make_project --url_base 'http://${url_host}' \
-                      --project_host '${project}' \
-                      --db_host mysql \
-                      --db_user root \
-                      --no_db \
-                      --no_query \
-                      --project_root $PROJECT_ROOT \
-                      '${project}' \
-    && sed -i -e 's|http://${url_host}|\${url_base}|g' $PROJECT_ROOT/config.xml $PROJECT_ROOT/html/user/schedulers.txt \
-    && sed -i -e 's/Deny from all/Require all denied/g' \
-              -e 's/Allow from all/Require all granted/g' \
-              -e '/Order/d' $PROJECT_ROOT/*.httpd.conf \
-    && echo "admin:zJiQQ3OoIfehM" > $PROJECT_ROOT/html/ops/.htpasswd \
-    && chmod g+w $PROJECT_ROOT/download \
-    && rm -r $PROJECT_ROOT/log_*
+# some other project files (some of which will be put in the correct place with
+# ONBUILD instructions later)
+COPY --chown=1000 db_dump_spec.xml /.project_root/
+COPY --chown=1000 html /.project_root/html/
+COPY --chown=1000 secrets.env /run/secrets/
 
-# project files
-RUN mkdir $PROJECT_ROOT/html/stats_archive
-COPY db_dump_spec.xml $PROJECT_ROOT/
-COPY html $PROJECT_ROOT/html
-COPY bin $PROJECT_ROOT/bin
+#==============================
+FROM debian:stretch-slim AS b2d
+#==============================
 
-# finish up 
-WORKDIR $PROJECT_ROOT
-COPY makeproject.sh /root/
-CMD /root/makeproject.sh
+# do boinc2docker as a separate stage so we don't have to keep re-downloading
+# things whenever the build cache is invalidated
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        python-yaml \
+        wget
+
+# the version of vboxwrapper/iso/appver installed is specified in
+# boinc2docker/boinc2docker.yml
+COPY boinc2docker /root/boinc2docker
+RUN /root/boinc2docker/boinc2docker_create_app --download_only
+
+
+
+#====================
+FROM base AS base-b2d
+#====================
+
+# copy/install extra things needed for the `-b2d` version
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python-yaml \
+        wget \
+    && rm -rf /var/lib/apt/lists
+
+COPY --from=b2d --chown=1000 /root/boinc2docker $HOME/boinc2docker 
+ENV PATH=$HOME/boinc2docker:$PATH
+
+
+
+#===========================
+FROM base$TAG AS makeproject
+#===========================
+
+# everything which depends on build-args is done as ONBUILD in this stage, so
+# the user can customize it
+
+ONBUILD ARG TAG
+ONBUILD ARG BOINC_USER
+ONBUILD ARG PROJECT_ROOT
+ONBUILD ENV BOINC_USER=$BOINC_USER \
+            PROJECT_ROOT=$PROJECT_ROOT \
+            USER=$BOINC_USER \
+            HOME=/home/$BOINC_USER \
+            MYSQL_HOST=mysql
+    
+# set up the non-root user who compiles the server
+ONBUILD RUN adduser $BOINC_USER --disabled-password --gecos ""
+
+# ensure the project/secrets volumes have the right permissions when mounted
+ONBUILD RUN mkdir $PROJECT_ROOT.dst && chown $BOINC_USER:$BOINC_USER $PROJECT_ROOT.dst
+
+ONBUILD USER $BOINC_USER
+
+
+# build server
+ONBUILD RUN makeproject-step1.sh
+ONBUILD RUN test -z "$TAG" || boinc2docker_create_app --projhome $HOME/project
+ONBUILD CMD makeproject-step2.sh
+
+ONBUILD WORKDIR $PROJECT_ROOT
+
+
+
+#==========================================
+FROM makeproject AS makeproject-defaultargs
+#==========================================
+
+# this triggers the ONBUILD directives using the default ARGs so we also get a
+# fully built example image

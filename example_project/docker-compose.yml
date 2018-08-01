@@ -1,4 +1,4 @@
-version: "3.4"
+version: "3"
 
 volumes:
   mysql:
@@ -8,20 +8,15 @@ volumes:
 
 services:
   mysql:
-    image: boinc/server_mysql:$VERSION$DEFAULTARGS
     build: 
       context: images/mysql
-      target: mysql$DEFAULTARGS
     volumes:
       - "mysql:/var/lib/mysql"
 
   makeproject:
-    image: boinc/server_makeproject:$VERSION$TAG$DEFAULTARGS
     build: 
       context: images/makeproject
-      target: makeproject$DEFAULTARGS
       args:
-        - TAG
         - BOINC_USER
         - PROJECT_ROOT
     volumes:
@@ -33,12 +28,9 @@ services:
       - PROJECT
 
   apache:
-    image: boinc/server_apache:$VERSION$TAG$DEFAULTARGS
     build: 
       context: images/apache
-      target: apache$DEFAULTARGS
       args:
-        - TAG
         - BOINC_USER
         - PROJECT_ROOT
     hostname: $PROJECT

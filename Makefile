@@ -36,7 +36,7 @@ rm-apache:
 	$(DC) stop apache && $(DC) rm -f apache
 
 exec-apache:
-	$(DC) exec apache bash
+	$(DC) exec -u boincadm apache bash
 
 
 # --- mysql ---
@@ -53,8 +53,22 @@ rm-mysql:
 
 # --- for local building/testing ---
 
-TAG=$(shell git describe --tags --abbrev=0)
-tag:
-	docker tag boinc/server_apache:latest-b2d boinc/server_apache:$(TAG)-b2d
-	docker tag boinc/server_mysql:latest boinc/server_mysql:$(TAG)
-	docker tag boinc/server_makeproject:latest-b2d boinc/server_makeproject:$(TAG)-b2d
+build-and-tag-all:
+	for TAG in "" "-b2d"; do \
+	    for DEFAULTARGS in "" "-defaultargs"; do \
+	        for VERSION in "latest" $(shell git describe --tags --abbrev=1); do \
+	            export TAG VERSION DEFAULTARGS ; \
+	            docker-compose build 2>&1 | grep --color=never "Successfully tagged"; \
+	        done ; \
+	    done ; \
+	done
+	
+push-all:
+	for TAG in "" "-b2d"; do \
+	    for DEFAULTARGS in "" "-defaultargs"; do \
+	        for VERSION in "latest" $(shell git describe --tags --abbrev=1); do \
+	            export TAG VERSION DEFAULTARGS ; \
+	            docker-compose push ; \
+	        done ; \
+	    done ; \
+	done

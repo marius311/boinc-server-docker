@@ -2,14 +2,21 @@
 
 set -e
 
+source /run/secrets/secrets.env
+
 PROJECT_ROOT_DEST=$PROJECT_ROOT.dst
 
 echo "Updating project files in data volume..."
 cd $PROJECT_ROOT
 # do variable substitution in files
-for file in config.xml html/user/schedulers.txt *.httpd.conf; do 
+for file in config.xml html/user/schedulers.txt *.httpd.conf html/project/project.inc; do 
     sed -i -e "s|\${PROJECT}|$PROJECT|gI" \
+           -e "s|\${PROJECT_ROOT}|$PROJECT_ROOT|gI" \
            -e "s|\${URL_BASE}|$URL_BASE|gI" \
+           -e "s|\${DB_PASSWD}|$DB_PASSWD|gI" \
+           -e "s|\${MAILPASS}|$MAILPASS|gI" \
+           -e "s|\${RECAPTCHA_PUBLIC_KEY}|$RECAPTCHA_PUBLIC_KEY|gI" \
+           -e "s|\${RECAPTCHA_PRIVATE_KEY}|$RECAPTCHA_PRIVATE_KEY|gI" \
         $file
 done
 # do variable substitution in file names (although with -n to not overwrite
@@ -36,14 +43,18 @@ if ! timeout -s KILL 60 mysqladmin ping -h mysql --wait &> /dev/null ; then
     exit 1
 fi
 
-# create database if it doesn't exist
-if [[ -z $(mysql -h mysql -e "show databases like '$PROJECT'") ]]; then
+
+# if we can get in the root MySQL account without password, it means this is the
+# first run after project creation, in which case set the password, and create
+# the project database
+if mysql -u root -e ""; then
     echo "Creating database..."
-    PYTHONPATH=/root/boinc/py python -c """
-from Boinc import database, configxml
-database.create_database(srcdir='/root/boinc',
-                         config=configxml.ConfigFile(filename='${PROJECT_ROOT}/config.xml').read().config,
-                         drop_first=False)
+    mysqladmin -h mysql -u root password $DB_PASSWD
+    PYTHONPATH=/usr/local/boinc/py python -c """if 1:
+        from Boinc import database, configxml
+        database.create_database(srcdir='/usr/local/boinc',
+                                 config=configxml.ConfigFile(filename='$PROJECT_ROOT/config.xml').read().config,
+                                 drop_first=False)
     """
 fi
 
