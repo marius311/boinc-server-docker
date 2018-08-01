@@ -45,7 +45,7 @@ services:
     depends_on:
       - mysql
     volumes: 
-      - "project:/home/$BOINC_USER/project"
+      - "project:$PROJECT_ROOT"
       - "results:/results"
       - "secrets:/run/secrets"
       - "/dev/null:/run/secrets/keys/code_sign_private"
