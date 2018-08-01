@@ -62,3 +62,13 @@ build-and-tag-all:
 	        done ; \
 	    done ; \
 	done
+	
+push-all:
+	for TAG in "" "-b2d"; do \
+	    for DEFAULTARGS in "" "-defaultargs"; do \
+	        for VERSION in "latest" $(shell git describe --tags --abbrev=1); do \
+	            export TAG VERSION DEFAULTARGS ; \
+	            docker-compose push ; \
+	        done ; \
+	    done ; \
+	done

@@ -78,6 +78,7 @@ ONBUILD RUN adduser www-data $BOINC_USER
 # ensure the project volumes have the right permissions when mounted
 ONBUILD RUN mkdir $PROJECT_ROOT && chown $BOINC_USER:$BOINC_USER $PROJECT_ROOT
 
+ONBUILD WORKDIR $PROJECT_ROOT
 
 
 #================================

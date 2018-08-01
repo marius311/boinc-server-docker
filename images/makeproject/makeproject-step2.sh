@@ -43,14 +43,18 @@ if ! timeout -s KILL 60 mysqladmin ping -h mysql --wait &> /dev/null ; then
     exit 1
 fi
 
-# create database if it doesn't exist
-if [[ -z $(mysql -h mysql -e "show databases like '$PROJECT'" -u $BOINC_USER -p$DB_PASSWD) ]]; then
+
+# if we can get in the root MySQL account without password, it means this is the
+# first run after project creation, in which case set the password, and create
+# the project database
+if mysql -u root -e ""; then
     echo "Creating database..."
-    PYTHONPATH=/usr/local/boinc/py python -c """
-from Boinc import database, configxml
-database.create_database(srcdir='/usr/local/boinc',
-                         config=configxml.ConfigFile(filename='$PROJECT_ROOT/config.xml').read().config,
-                         drop_first=False)
+    mysqladmin -h mysql -u root password $DB_PASSWD
+    PYTHONPATH=/usr/local/boinc/py python -c """if 1:
+        from Boinc import database, configxml
+        database.create_database(srcdir='/usr/local/boinc',
+                                 config=configxml.ConfigFile(filename='$PROJECT_ROOT/config.xml').read().config,
+                                 drop_first=False)
     """
 fi
 

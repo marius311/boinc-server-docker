@@ -7,7 +7,7 @@ cd /usr/local/boinc/tools
 ./make_project --url_base 'http://${url_host}' \
                --project_host '${project}' \
                --db_host mysql \
-               --db_user $BOINC_USER \
+               --db_user root \
                --db_passwd '${db_passwd}' \
                --no_db \
                --no_query \

@@ -4,6 +4,11 @@ set -e
 
 cd $PROJECT_ROOT
 
+# gives $BOINC_USER permission to run Docker commands
+DOCKER_GID=$(stat -c '%g' /var/run/docker.sock)
+addgroup -gid ${DOCKER_GID} docker
+addgroup ${BOINC_USER} docker
+
 while :
 do
 
@@ -27,11 +32,6 @@ do
         bin/start
         (echo "PATH=$PATH"; echo "SHELL=/bin/bash"; cat *.cronjob) | crontab
     """
-    
-    # gives $BOINC_USER permission to run Docker commands
-    DOCKER_GID=$(stat -c '%g' /var/run/docker.sock)
-    addgroup -gid ${DOCKER_GID} docker
-    addgroup ${BOINC_USER} docker
     
     echo "Project startup complete."
     

@@ -1,1 +1,0 @@
-FROM boinc/server_makeproject:latest

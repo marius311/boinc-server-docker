@@ -99,13 +99,11 @@ Happy crunching!
               source .env
               eval "$(docker-compose run --rm -T makeproject cat /run/secrets/secrets.env)"
               
-              docker-compose run --rm -u root makeproject chown -R boincadm:boincadm /home/boincadm/project.dst
+              docker-compose run --rm -u root makeproject chown -R $BOINC_USER:$BOINC_USER $PROJECT_ROOT.dst
 
               docker-compose exec mysql mysql_upgrade
 
-              docker-compose exec mysql mysql -e \ """ 
-                  CREATE USER 'boincadm'@'%' IDENTIFIED BY '$DB_PASSWD'; 
-                  GRANT ALL ON $PROJECT.* TO boincadm;"""
+              docker-compose exec mysql mysqladmin -u root password $DB_PASSWD
               ```
         6) Now bring your project back up with `docker-compose up -d`.
 
