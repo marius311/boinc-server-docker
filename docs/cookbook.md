@@ -16,7 +16,9 @@
 		- [Installing software](#installing-software)
 		- [Custom `config.xml` and other files](#custom-configxml-and-other-files)
 		- [Custom configuration variables](#custom-configuration-variables)
-		- [Digitally signing your apps](#digitally-signing-your-apps)
+			- [Under-the-hood](#under-the-hood)
+		- [Managing secrets](#managing-secrets)
+			- [Security considerations](#security-considerations)
 		- [Advanced steps](#advanced-steps)
 			- [Custom `boinc2docker`-based apps](#custom-boinc2docker-based-apps)
 			- [Squashing images](#squashing-images)
@@ -242,7 +244,7 @@ Next you will probably want to give your project a name, give it a URL, and more
 If you want to change `config.xml`, first copy it out of the Docker container into your project folder with, 
 
 ```bash
-docker-compose run makeproject cat /root/project/config.xml > myproject/images/makeproject/config.xml
+docker-compose run makeproject cat config.xml > myproject/images/makeproject/config.xml
 ```
 
 Your folder structure should now look like this,
@@ -263,7 +265,7 @@ myproject/
 Now edit `myproject/images/makeproject/Dockerfile` to contain the line,
 
 ```Dockerfile
-COPY config.xml /root/project
+COPY config.xml $PROJECT_ROOT/project
 ```
 
 The `COPY` command makes it so that the next time you `docker-compose build` your project images, the `config.xml` file in `myproject/images/makeproject` is copied into the image, overwriting the default one which is there. Any changes you make to this file are now reflected in the image, and will take effect after you run `build` and `up`. You can now set `<long_name>` as desired, or change any other option. 
@@ -273,24 +275,29 @@ Similarly, you can `COPY` any files into any of the other containers comprising 
 
 ### Custom configuration variables
 
-You may have noticed that the the `config.xml` file you copied in the previous step has some placeholder variables in it like `${project}` and `${url_base}`. These variables allow some simple but powerful run-time re-configuration of the server. This was used, for example, in the [Server URL](#server-url) section.
+The server also has a number of custom configuration variables. These fall into two categories, shown below along with their default values:
 
-The idea is that you can pass some set of environment variables to `docker-compose up` which reconfigure the server. Currently two variables are supported (but more are planned to be added)
+* Options which can be changed at runtime:
+	* `URL_BASE=http://127.0.0.1` - The "base" or "master" URL. 
+	* Theses can be specified on the command line:
+		```bash
+		URL_BASE=http://1.2.3.4 docker-compose up -d
+		```
+* Options which can only be changed once before the first time you creat your project, and cannot be changed afterwards:
+	* `PROJECT=boincserver` - The name of the project. 
+	* `BOINC_USER=boincadm` - The user running the project
+	* `PROJECT_ROOT=/home/boincadm/project` - The project folder.
+	* These should be put in your `.env` file before you build your project. 
 
-* `URL_BASE` - The "base" or "master" URL. 
-* `PROJECT` - The name of the project. 
 
-These can be specified in e.g. the following way,
+#### Under-the-hood
 
-```bash
-URL_BASE=http://1.2.3.4 PROJECT=myproject docker-compose up -d
-```
-
-The underlying mechanism is based on the following procedure. `boinc-server-docker` does a variable substitution (names are case *in*-sensitive) anywhere it finds these variables in the following set of files, and also in the *filenames* of files which match these patterns (except in the case when this would overwrite an existing file):
+You don't really need to know this, but the way these work is the following. For the runtime variables, `boinc-server-docker` does a case-insensitive variable substitution whenever you run `makeproject`, looking for these variables in the following files and also their *filenames*:
 
 ```
 config.xml
 html/user/schedulers.txt
+html/project/project.inc
 *.httpd.conf
 *.readme
 *.cronjob
@@ -299,18 +306,55 @@ pid_*
 tmp_*
 ```
 
-The default project created by `makeproject` has these files and filenames initialized such that they contain `${url_base}` and `${project}` in the appropriate places. You can see this, for example, by running `docker-compose run makeproject ls /root/project`, and you saw it in the generated `config.xml` as well. 
+You may have noticed, for example, `${url_base}` appears in the `config.xml` from above, and this gets substituted by the run-time value of `URL_BASE`. 
 
-Note that these are not permanent, so that if you later run a `docker-compose up` *without* specifying any of the variables, they reset back to their defaults.
+Note that these are not permanent, so that if you later run a `docker-compose up` *without* specifying any of the run-time variables, they reset back to their defaults. Their default values can be set in the `.env`. 
 
-Their default values can viewed in the `.env` file inside of `myproject/`. If you want to make the changes permanent, you should edit this file. 
+The build-time variables cannot be changed at run-time becase they affect the build of the Docker images themselves. In practice this is done with Docker `ONBUILD` instructions and build-args. When you source the base `boinc-server-docker` with your `FROM` command, a number of `ONBUILD` instructions are triggered which finish building the images depending on the args that you have specified. 
 
-In designing your custom `config.xml` file, you are encouranged to use these variables, as they can make running your server more flexible. 
+### Managing secrets
+
+It is important to understand how the server manages "secrets", such as passwords and signing keys, before launching you real server. 
+
+Your project contains a number of secrets, including: 
+
+* Code signing keys and upload keys
+* Ops password
+* Database password
+* Mail password
+* Recaptcha keys
+
+These are collected by `boinc-server-docker` and stored in the `secrets` volume. The first time you create your project, default values are given to all of the passwords, and a new set of keys are generated and stored in this volume. The volume is mounted at `/run/secrets` and you can view the secrets via:
+
+```bash
+docker-compose run makeproject bash
+cd /run/secrets
+ls # etc...
+```
+
+Once the `secrets` volume is created, these files are never overwritten unless you manually remove the volume. If you remove the volume, it will be repopulated with the defaults the next time you run `makeproject`. 
+
+Before you launch your real server, you should edit these files to set your own passwords. It is safe to leave the automatically generated signing keys (which are different everytime you build your project). You should also make a backup of this volume in a safe off-site location in case you accidentally delete the volume or suffer a server crash. 
+
+The `DB_PASSWD` variable which you will find in `secrets/secrets.env` controls the database password. The database is created the first time you run the `mysql` container. Changing `DB_PASSWD` does not change the password for the database, only the password which the daemons use to try and log in to the database (which will be wrong if its anything different than was `DB_PASSWD` was set to when you first ran the `mysql` container). Thus, after you set this password, you should delete the `mysql` volume (via `docker volume rm ...`), so that the next time you run your project, the database is generated with the correct password. 
+
+
+#### Security considerations
+
+One of the secrets stored in the `secrets` volume is the code signing private key. BOINC [recommends](https://boinc.berkeley.edu/trac/wiki/CodeSigning) that this key be kept on an off-site machine without internet connection. `boinc-server-docker` does not currently follow this advice (one reason being that it makes it prohibitively difficult to sign new apps). Instead, we ensure that this key is never stored into any of the Docker images, and is only used at run-time by the `makeproject` container, which never communicates with the outside world. The `apache` and `mysql` images have the `secrets` volume mounted, but have the private key overwritten by mounting the host's `/dev/null` on top of it. The possible attack vectors are thus: 
+
+* Gain root access on the host running the server, which would allow the attacker to read the `secrets` volume. The only obvious path would involve an SSH exploit as this should be the only other thing this host is natively running. 
+
+* Gain access to the `www-data` user on the `apache` container, which is the single user communicating with the outside world in any of these containers. Alternatively, gain access to the `mysql` user in the `mysql` container (although this is more difficult as this user never communicates with the outwide world). In either case, *then* perform a Docker breakout exploit to gain access to the root on the host. 
+
+* If running the `b2d` variant of the images, `/var/run/docker.sock` is mounted inside the `apache` container and `boincadm` has permissions on it to control the Docker daemon on the host. Controlling the Docker daemon is equivalent to root access on the host, so the attacker could try and gain access directly to `boincadm` after having comprised `www-data` (there would be no way to gain direct access to `boincadm` as it otherwise never communicates with the outside world). 
+
+Running the server in Docker essentially adds a layer of security, becase an attack which before might have given the attacker access to the code signing keys if the server was running natively now needs an additional Docker breakout exploit to be possible. Of course, this is still not as safe as the off-site storage recommendation, but nevertheless requires two difficult exploits, which we view as unlikely to be possible. 
+
 
 ---
 *This cookbook is a work in progress; the remainder coming soon!*
 
-### Digitally signing your apps
 
 ### Advanced steps
 

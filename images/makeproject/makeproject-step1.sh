@@ -22,6 +22,9 @@ sed -i -e 's/Deny from all/Require all denied/g' \
        -e 's/Allow from all/Require all granted/g' \
        -e '/Order/d' $PROJECT_ROOT/*.httpd.conf
 
+cp -rT /.project_root $PROJECT_ROOT
+rm -rf /.project_root/*
+
 chmod g+w $PROJECT_ROOT/download
 rm -r $PROJECT_ROOT/log_*
 mkdir $PROJECT_ROOT/html/stats_archive

@@ -23,8 +23,6 @@ There are no other dependencies, as everything else is packaged inside of Docker
 
 For a full tutorial on creating your own server with `boinc-server-docker`, see the [project cookbook](https://github.com/marius311/boinc-server-docker/blob/master/docs/cookbook.md). 
 
-If you would like to set up development environment so that you can contribute to the BOINC server source code, see the [development workflow](docs/dev-workflow.md). 
-
 If you are looking to create a server and are already somewhat familiar with Docker and BOINC, the following short description takes you through creating a server and running your own science application. 
 
 ### Quickstart
@@ -83,21 +81,33 @@ Happy crunching!
 ## News
 
 * **Version 3.0.0** - July 27, 2018
-    * *Breaking change:* The BOINC daemons no longer run as root, instead they run as an unprivileged user specified by the `BOINC_USER` variable, which is by default equal to `boincadm`. If you created your project with `boinc-server-docker` v2.X.X, you will need to run the following to upgrade your project:
+    * Based on [server_release/0.9](https://github.com/BOINC/boinc/releases/tag/server_release%2F0.9).
+    * Upgraded to Debian Stretch, PHP 7.0.31 and MariaDB 10.3.8. 
+    * Docker requirement is now 17.09.0ce on all platforms.  
+    * Project "secrets" such as passwords and signing keys are now stored in a new volume called `secrets`, and the procedure for how to deal with them is documented [here](docs/cookbook.md#managing-secrets). 
+    * *Breaking change:* For improved security, the BOINC daemons no longer run as root, instead they run as an unprivileged user, by default named `boincadm`. 
+    * Added two new options which are congurable at build-time, `BOINC_USER` and `PROJECT_ROOT`, and fixed `PROJECT` which wasn't fully configurable before. Under the hood, the `boinc-server-docker` images now use Docker `ONBUILD` instructions to make this happen.     
+    * *Upgrade instructions:* If you don't care about the files in your project's database and project folder, you can just wipe your project clean with `docker-compose down -v` and simply start a fresh server with version `3.0.0`. If instead you want to upgrade a project you created with `boinc-server-docker v2.x.x`, you should follow these instructions:
+        1) Edit the `FROM` line in your custom Dockerfiles to source the appropriate `3.0.0` images.
+        2) Diff your `docker-compose.yml` and `.env` files against the corresponding ones in `example_project/`, and merge in changes you see (notably, add the `secrets` volume). 
+        3) Run `docker-compose build` to build updated images. 
+        3) Run `docker-compose run --rm makeproject bash` and navigate to `/home/boincadm/secrets`. This is your `secrets` volume, and you should edit the files you see here so that they contain your passwords, keys, etc... 
+        4) Bring your project down with `docker-compose down`.
+        5) Run the following to update permissions and upgrade your database: 
 
-      ```bash
-      source .env
+              ```bash
+              source .env
+              eval "$(docker-compose run --rm -T makeproject cat /run/secrets/secrets.env)"
+              
+              docker-compose run --rm -u root makeproject chown -R boincadm:boincadm /home/boincadm/project.dst
 
-      docker-compose run --rm -u root makeproject \
-          chown -R $BOINC_USER:$BOINC_USER /home/$BOINC_USER/project.dst
+              docker-compose exec mysql mysql_upgrade
 
-      docker-compose run --rm -u root makeproject mysql -h mysql -e \ """ 
-          CREATE USER '$BOINC_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'; 
-          GRANT ALL ON $PROJECT.* TO $BOINC_USER;"""
-      ```
-      Alternatively, if don't care about the data in your project folder and database, you can also just wipe the server clean with `docker-compose down -v` and start a new copy with this latest version.
-
-    
+              docker-compose exec mysql mysql -e \ """ 
+                  CREATE USER 'boincadm'@'%' IDENTIFIED BY '$DB_PASSWD'; 
+                  GRANT ALL ON $PROJECT.* TO boincadm;"""
+              ```
+        6) Now bring your project back up with `docker-compose up -d`.
 
 * **Version 2.1.0** - May 29, 2018
     * Update boinc to [server_release/0.9](https://github.com/BOINC/boinc/releases/tag/server_release%2F0.9).

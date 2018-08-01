@@ -33,11 +33,10 @@ RUN apt-get update \
 COPY --chown=1000 boinc /usr/local/boinc
 RUN cd /usr/local/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
 
-# first step of the project-making script, which does everything else that can
-# be done at Docker build-time (ie without a database)
+# project-making scripts
 COPY makeproject-step1.sh makeproject-step2.sh /usr/local/bin/
 
-# some other project files (some which will be put in the correct place with
+# some other project files (some of which will be put in the correct place with
 # ONBUILD instructions later)
 COPY --chown=1000 db_dump_spec.xml /.project_root/
 COPY --chown=1000 html /.project_root/html/
@@ -47,7 +46,7 @@ COPY --chown=1000 secrets.env /run/secrets/
 FROM debian:stretch-slim AS b2d
 #==============================
 
-# do boinc2docker as a separate target so we don't have to keep re-downloading
+# do boinc2docker as a separate stage so we don't have to keep re-downloading
 # things whenever the build cache is invalidated
 
 RUN apt-get update \
@@ -104,7 +103,6 @@ ONBUILD RUN mkdir $PROJECT_ROOT.dst && chown $BOINC_USER:$BOINC_USER $PROJECT_RO
 
 ONBUILD USER $BOINC_USER
 
-ONBUILD RUN cp -rT /.project_root $PROJECT_ROOT && rm -rf /.project_root/*
 
 # build server
 ONBUILD RUN makeproject-step1.sh

@@ -19,6 +19,7 @@ services:
     volumes:
       - "mysql:/var/lib/mysql"
       - "secrets:/run/secrets"
+      - "/dev/null:/run/secrets/keys/code_sign_private"
 
   makeproject:
     image: boinc/server_makeproject:$VERSION$TAG$DEFAULTARGS
@@ -58,6 +59,7 @@ services:
       - "project:/home/$BOINC_USER/project"
       - "results:/results"
       - "secrets:/run/secrets"
+      - "/dev/null:/run/secrets/keys/code_sign_private"
       - "/var/run/docker.sock:/var/run/docker.sock"
     ports: 
       - "80:80"

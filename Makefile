@@ -53,9 +53,12 @@ rm-mysql:
 
 # --- for local building/testing ---
 
-VER = $(shell git describe --tags --abbrev=0)
-TAG ?= $(shell bash -c 'source .env && echo $$TAG')	
-tag:
-	docker tag boinc/server_apache:latest$(TAG) boinc/server_apache:$(VER)$(TAG)
-	docker tag boinc/server_mysql:latest boinc/server_mysql:$(VER)
-	docker tag boinc/server_makeproject:latest$(TAG) boinc/server_makeproject:$(VER)$(TAG)
+build-and-tag-all:
+	for TAG in "" "-b2d"; do \
+	    for DEFAULTARGS in "" "-defaultargs"; do \
+	        for VERSION in "latest" $(shell git describe --tags --abbrev=1); do \
+	            export TAG VERSION DEFAULTARGS ; \
+	            docker-compose build 2>&1 | grep --color=never "Successfully tagged"; \
+	        done ; \
+	    done ; \
+	done
