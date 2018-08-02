@@ -86,7 +86,8 @@ FROM base$TAG AS makeproject
 # everything which depends on build-args is done as ONBUILD in this stage, so
 # the user can customize it
 
-ONBUILD ARG TAG
+ARG TAG
+ENV TAG=$TAG
 ONBUILD ARG BOINC_USER
 ONBUILD ARG PROJECT_ROOT
 ONBUILD ENV BOINC_USER=$BOINC_USER \
