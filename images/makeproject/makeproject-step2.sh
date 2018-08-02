@@ -23,12 +23,9 @@ done
 # existing files which may be customized versions provided by the project)
 for file in \$\{project\}*; do
     mv -n $file ${file/\$\{project\}/$PROJECT}
+    rm -f $file
 done
-# clean up old files with PROJECT-dependent names
-find $PROJECT_ROOT_DEST -maxdepth 1 -regextype egrep \
-    -regex "(.*(cronjob|readme|(httpd.conf)))|(.*/(log|pid|tmp).*)|(.*/run_state.*xml)" \
-    ! -regex "(.*/$PROJECT.(cronjob|readme|(httpd.conf)))|(.*/(log|pid|tmp)_$PROJECT)|(.*/run_state_${PROJECT}.xml)" \
-    -exec rm -rf {} \;
+
 # copy files
 cp -rfT --preserve=mode,ownership $PROJECT_ROOT $PROJECT_ROOT_DEST
 mv $PROJECT_ROOT ${PROJECT_ROOT}.orig
