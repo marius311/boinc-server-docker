@@ -80,6 +80,8 @@ Happy crunching!
 
 ## News
 
+* **Version 3.0.1** - Aug 2, 2018
+    * Minor bug fix where `PROJECT_ROOT` wasn't fully customizable
 * **Version 3.0.0** - July 27, 2018
     * Based on [server_release/0.9](https://github.com/BOINC/boinc/releases/tag/server_release%2F0.9).
     * Upgraded to Debian Stretch, PHP 7.0.31 and MariaDB 10.3.8. 
