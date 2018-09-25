@@ -88,7 +88,7 @@ Happy crunching!
     * Docker requirement is now 17.09.0ce on all platforms.  
     * Project "secrets" such as passwords and signing keys are now stored in a new volume called `secrets`, and the procedure for how to deal with them is documented [here](docs/cookbook.md#managing-secrets). 
     * *Breaking change:* For improved security, the BOINC daemons no longer run as root, instead they run as an unprivileged user, by default named `boincadm`. 
-    * Added two new options which are congurable at build-time, `BOINC_USER` and `PROJECT_ROOT`, and fixed `PROJECT` which wasn't fully configurable before. Under the hood, the `boinc-server-docker` images now use Docker `ONBUILD` instructions to make this happen.     
+    * Added two new options which are configurable at build-time, `BOINC_USER` and `PROJECT_ROOT`, and fixed `PROJECT` which wasn't fully configurable before. Under the hood, the `boinc-server-docker` images now use Docker `ONBUILD` instructions to make this happen.     
     * *Upgrade instructions:* If you don't care about the files in your project's database and project folder, you can just wipe your project clean with `docker-compose down -v` and simply start a fresh server with version `3.0.0`. If instead you want to upgrade a project you created with `boinc-server-docker v2.x.x`, you should follow these instructions:
         1) Edit the `FROM` line in your custom Dockerfiles to source the appropriate `3.0.0` images.
         2) Diff your `docker-compose.yml` and `.env` files against the corresponding ones in `example_project/`, and merge in changes you see (notably, add the `secrets` volume). 
@@ -123,7 +123,7 @@ Happy crunching!
 
 ## Development and Contributing
 
-For using `boinc-server-docker` to work on development of the BOINC server soure code, see the [development workflow](docs/dev-workflow.md). 
+For using `boinc-server-docker` to work on development of the BOINC server source code, see the [development workflow](docs/dev-workflow.md). 
 
 There is developer documentation for `boinc-server-docker` itself, but please feel free to contact the maintainers or submit Issues and Pull Requests for this repository. 
 
