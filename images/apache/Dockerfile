@@ -23,7 +23,7 @@ RUN apt-get update \
         supervisor \
         vim-tiny \
         wget \
-    && wget https://git.io/psysh -O /usr/bin/psysh \
+    && wget https://psysh.org/psysh -O /usr/bin/psysh \
     && chmod +x /usr/bin/psysh \
     && rm -rf /var/lib/apt/lists
 
