@@ -17,11 +17,6 @@ cd /usr/local/boinc/tools
 
 sed -i -e 's|http://${url_host}|\${url_base}|g' $PROJECT_ROOT/config.xml $PROJECT_ROOT/html/user/schedulers.txt
 
-
-sed -i -e 's/Deny from all/Require all denied/g' \
-       -e 's/Allow from all/Require all granted/g' \
-       -e '/Order/d' $PROJECT_ROOT/*.httpd.conf
-
 cp -rT /.project_root $PROJECT_ROOT
 rm -rf /.project_root/*
 
