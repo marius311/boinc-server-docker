@@ -26,7 +26,9 @@ RUN apt-get update \
         php7.0-xml \
         pkg-config \
         python \
+        python3 \
         python-mysqldb \
+        python3-mysqldb \
     && rm -rf /var/lib/apt/lists
 
 # get source and compile server 
