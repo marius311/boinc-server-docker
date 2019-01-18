@@ -1,1 +1,1 @@
-FROM boinc/server_apache:3.0.1-b2d
+FROM boinc/server_apache:4.0.0-b2d
