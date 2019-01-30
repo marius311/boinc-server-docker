@@ -265,7 +265,7 @@ myproject/
 Now edit `myproject/images/makeproject/Dockerfile` to contain the line,
 
 ```Dockerfile
-COPY config.xml $PROJECT_ROOT/project
+COPY config.xml $PROJECT_ROOT
 ```
 
 The `COPY` command makes it so that the next time you `docker-compose build` your project images, the `config.xml` file in `myproject/images/makeproject` is copied into the image, overwriting the default one which is there. Any changes you make to this file are now reflected in the image, and will take effect after you run `build` and `up`. You can now set `<long_name>` as desired, or change any other option. 
