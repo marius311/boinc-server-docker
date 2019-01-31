@@ -80,6 +80,8 @@ Happy crunching!
 
 ## News
 
+* **Version 4.0.1** - Jan 31, 2018
+    * Fix problem with mysql image-tagging which caused errors when trying to build a custom project.
 * **Version 4.0.0** - Jan 18, 2018
     * Based on [server_release/1.0/1.0.3](https://github.com/BOINC/boinc/releases/tag/server_release%2F1.0%2F1.0.3).
 * **Version 3.0.1** - Aug 2, 2018

@@ -8,7 +8,7 @@ volumes:
 
 services:
   mysql:
-    image: boinc/server_mysql:$VERSION$DEFAULTARGS
+    image: boinc/server_mysql:$VERSION$TAG$DEFAULTARGS
     build: 
       context: images/mysql
       target: mysql$DEFAULTARGS
