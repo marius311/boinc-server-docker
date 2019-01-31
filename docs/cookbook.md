@@ -241,10 +241,10 @@ In exactly this way you can install any software into any of the containers, or 
 
 Next you will probably want to give your project a name, give it a URL, and more generally copy things into the server and change various files. Lets take a look at changing the project "long name". This is specified inside the `config.xml` file under the tag `<long_name>`. 
 
-If you want to change `config.xml`, first copy it out of the Docker container into your project folder with, 
+If you want to change `config.xml`, first copy it out of the Docker container by running the following from your project folder, 
 
 ```bash
-docker-compose run makeproject cat config.xml > myproject/images/makeproject/config.xml
+docker-compose run makeproject cat config.xml > images/makeproject/config.xml
 ```
 
 Your folder structure should now look like this,
@@ -262,13 +262,13 @@ myproject/
             config.xml  # <-- new file we just copied
 ```
 
-Now edit `myproject/images/makeproject/Dockerfile` to contain the line,
+Now edit `images/makeproject/Dockerfile` and add the following line at the bottom,
 
 ```Dockerfile
-COPY config.xml $PROJECT_ROOT
+COPY --chown=1000 config.xml $PROJECT_ROOT
 ```
 
-The `COPY` command makes it so that the next time you `docker-compose build` your project images, the `config.xml` file in `myproject/images/makeproject` is copied into the image, overwriting the default one which is there. Any changes you make to this file are now reflected in the image, and will take effect after you run `build` and `up`. You can now set `<long_name>` as desired, or change any other option. 
+The `COPY` command makes it so that the next time you `docker-compose build` your project images, the `config.xml` file in `myproject/images/makeproject` is copied into the image, overwriting the default one which is there (the `--chown=1000` part is needed to make the permission correct inside the container). Any changes you make to this file are now reflected in the image, and will take effect after you run `build` and `up`. You can now set `<long_name>` as desired, or change any other option. 
 
 Similarly, you can `COPY` any files into any of the other containers comprising your project. For a full list of available Dockerfile commands beyond the `FROM`, `RUN`, and `COPY` that we've discussed here, see the [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/).
 
