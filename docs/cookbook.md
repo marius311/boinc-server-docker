@@ -29,7 +29,7 @@ This guide will show you how to create your own [BOINC](http://boinc.berkeley.ed
 
 `boinc-server-docker` packages up all of the dependencies of a BOINC project into a [Docker](http://www.docker.com) application, making it extremely easy and fast to set up. You don't need to know anything about Docker to use `boinc-server-docker`, its fairly easy to pick up the few pieces you need to know along the way. This guide will assume you don't know anything about Docker. 
 
-Once you have your server running, there a few ways to develop and run your code on it. This guide describes only the easiest way to do so, which is to use the `boinc2docker` tool that comes preinstalled on `boinc-server-docker`. This will involve packaging your application code inside a Docker container, a fairly simple task which we will describe. It assumes your code runs on Linux, and will automatically allow your code to run on Linux, Mac, and Windows 64bit volunteer computers. 
+Once you have your server running, there a few ways to develop and run your code on it. This guide describes only the easiest way to do so, which is to use the `boinc2docker` tool that comes pre-installed on `boinc-server-docker`. This will involve packaging your application code inside a Docker container, a fairly simple task which we will describe. It assumes your code runs on Linux, and will automatically allow your code to run on Linux, Mac, and Windows 64bit volunteer computers. 
 
 `boinc-server-docker` was initially developed for [Cosmology@Home](http://www.cosmologyathome.org). To see an example of a working project which is built on `boinc-server-docker`, see the Cosmology@Home [source code](http://www.github.com/marius311/cosmohome). 
 
@@ -74,7 +74,7 @@ Some terminology: A Docker **image** (like a virtual machine image) contains the
 
 Finally, Docker provides a free public repository for hosting images called the Docker Hub. You **pull** and **push** images to and from Docker Hub. This is how we distribute the `boinc-server-docker` images. Most images on the Docker Hub start with a repository name, e.g. our repository is called "boinc" so the full image names look like "boinc/server_apache:latest". 
 
-Docker images are created by writing a **Dockerfile** which specifies a base image to start from and a set of normal Linux commands which are run ontop of the image to create a new one. When you create your own server, you will start from a base image provided by `boinc-server-docker` (which already includes all of the BOINC software), and you will write a Dockerfile which adds just your customizations, (e.g. your custom web pages, your applications,  etc...)
+Docker images are created by writing a **Dockerfile** which specifies a base image to start from and a set of normal Linux commands which are run on top of the image to create a new one. When you create your own server, you will start from a base image provided by `boinc-server-docker` (which already includes all of the BOINC software), and you will write a Dockerfile which adds just your customizations, (e.g. your custom web pages, your applications,  etc...)
 
 
 ## Launching a test server
@@ -125,7 +125,7 @@ where you can replace `http://1.2.3.4` with whatever IP address or hostname you 
 
 Note that each time you run the `docker-compose up` command you should specify the `URL_BASE` otherwise it will reset to the default. If you are running via Docker Machine, you can use `URL_BASE=http://$(docker-machine ip)` to automatically set the correct URL. 
 
-At this point, your BOINC server is now 100% fully functioning, its webpage can be accessed at `http://127.0.0.1/boincserver` or whever else you have set the server URL, and it is ready to accept connections from clients and submission of jobs. 
+At this point, your BOINC server is now 100% fully functioning, its webpage can be accessed at `http://127.0.0.1/boincserver` or whatever you have set the server URL, and it is ready to accept connections from clients and submission of jobs. 
 
 
 ### Running jobs
@@ -197,7 +197,7 @@ myproject/
             Dockerfile
 ```
 
-The three `Dockerfile`'s will contain any modifications your project needs ontop of the default `boinc-server-docker` images. The `docker-compose.yml` file specifies how these containers work together, and will likely not need any modifications from you. The `.env` file contains some customizable configuration options which you can change. 
+The three `Dockerfile`'s will contain any modifications your project needs on top of the default `boinc-server-docker` images. The `docker-compose.yml` file specifies how these containers work together, and will likely not need any modifications from you. The `.env` file contains some customizable configuration options which you can change. 
 
 ### Building and running your server
 
@@ -283,7 +283,7 @@ The server also has a number of custom configuration variables. These fall into 
 		```bash
 		URL_BASE=http://1.2.3.4 docker-compose up -d
 		```
-* Options which can only be changed once before the first time you creat your project, and cannot be changed afterwards:
+* Options which can only be changed once before the first time you create your project, and cannot be changed afterwards:
 	* `PROJECT=boincserver` - The name of the project. 
 	* `BOINC_USER=boincadm` - The user running the project
 	* `PROJECT_ROOT=/home/boincadm/project` - The project folder.
@@ -310,7 +310,7 @@ You may have noticed, for example, `${url_base}` appears in the `config.xml` fro
 
 Note that these are not permanent, so that if you later run a `docker-compose up` *without* specifying any of the run-time variables, they reset back to their defaults. Their default values can be set in the `.env`. 
 
-The build-time variables cannot be changed at run-time becase they affect the build of the Docker images themselves. In practice this is done with Docker `ONBUILD` instructions and build-args. When you source the base `boinc-server-docker` with your `FROM` command, a number of `ONBUILD` instructions are triggered which finish building the images depending on the args that you have specified. 
+The build-time variables cannot be changed at run-time because they affect the build of the Docker images themselves. In practice this is done with Docker `ONBUILD` instructions and build-args. When you source the base `boinc-server-docker` with your `FROM` command, a number of `ONBUILD` instructions are triggered which finish building the images depending on the args that you have specified. 
 
 ### Managing secrets
 
@@ -349,7 +349,7 @@ One of the secrets stored in the `secrets` volume is the code signing private ke
 
 * If running the `b2d` variant of the images, `/var/run/docker.sock` is mounted inside the `apache` container and `boincadm` has permissions on it to control the Docker daemon on the host. Controlling the Docker daemon is equivalent to root access on the host, so the attacker could try and gain access directly to `boincadm` after having comprised `www-data` (there would be no way to gain direct access to `boincadm` as it otherwise never communicates with the outside world). 
 
-Running the server in Docker essentially adds a layer of security, becase an attack which before might have given the attacker access to the code signing keys if the server was running natively now needs an additional Docker breakout exploit to be possible. Of course, this is still not as safe as the off-site storage recommendation, but nevertheless requires two difficult exploits, which we view as unlikely to be possible. 
+Running the server in Docker essentially adds a layer of security, because an attack which before might have given the attacker access to the code signing keys if the server was running natively now needs an additional Docker breakout exploit to be possible. Of course, this is still not as safe as the off-site storage recommendation, but nevertheless requires two difficult exploits, which we view as unlikely to be possible. 
 
 
 ---
