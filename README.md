@@ -1,6 +1,12 @@
 
 # boinc-server-docker
 
+[![](https://images.microbadger.com/badges/version/boinc/server_makeproject.svg)](https://microbadger.com/images/boinc/server_makeproject "Get your own version badge on microbadger.com")
+[![](https://images.microbadger.com/badges/image/boinc/server_makeproject.svg)](https://microbadger.com/images/boinc/server_makeproject "Get your own image badge on microbadger.com")
+![Docker Pulls](https://img.shields.io/docker/pulls/boinc/server_makeproject.svg)
+![Docker Stars](https://img.shields.io/docker/stars/boinc/server_makeproject.svg)
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/boinc/server_makeproject.svg)
+
 `boinc-server-docker` is the easiest way to run your own [BOINC](http://boinc.berkeley.edu/) server. You can run the server on a Linux machine, in which case the requirements are, 
 
 * [Docker](https://docs.docker.com/engine/installation/) (>=17.09.0ce)
