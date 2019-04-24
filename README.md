@@ -35,7 +35,7 @@ If you are looking to create a server and are already somewhat familiar with Doc
 
 To check out this repository and get a test server fully up and running, simply run,
 ```bash
-git clone https://github.com/marius311/boinc-server-docker.git
+git clone --recursive https://github.com/marius311/boinc-server-docker.git
 cd boinc-server-docker
 docker-compose pull
 docker-compose up -d
