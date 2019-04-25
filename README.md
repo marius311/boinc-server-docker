@@ -35,7 +35,7 @@ If you are looking to create a server and are already somewhat familiar with Doc
 
 To check out this repository and get a test server fully up and running, simply run,
 ```bash
-git clone --recursive https://github.com/marius311/boinc-server-docker.git
+git clone https://github.com/marius311/boinc-server-docker.git
 cd boinc-server-docker
 docker-compose pull
 docker-compose up -d
@@ -83,6 +83,14 @@ Finally, `boinc-server-docker` is not just useful to get a simple test server ru
 
 Happy crunching! 
 
+## Development and Contributing
+
+For using `boinc-server-docker` to work on development of the BOINC server source code, see the [development workflow](docs/dev-workflow.md). 
+
+There is developer documentation for `boinc-server-docker` itself, but please feel free to contact the maintainers or submit Issues and Pull Requests for this repository. 
+
+As a reminder, **to modify and rebuild any of the `boinc-server-docker` images, you will need this git repository's submodules checked out** (run `git submodule update --init --recursive`, or clone with `git clone --recursive` in the first place). Note also that currently building the images only works on Linux. 
+
 
 ## News
 
@@ -129,12 +137,3 @@ Happy crunching!
     * The default server URL is now `http://127.0.0.1/boincserver` rather than previously when it was `http://boincserver.com/boincserver`. This removes the need to edit your `/etc/hosts` file on Linux, and on Windows/Mac/docker-machine replaces having to edit `/etc/hosts` with the SSH tunnel command above. *Related warning: the boincserver.com domain is currently being squatted, so if you're using the old version be careful that you do not type sensitive information into the server website thinking you're interacting with your local test server when in fact it's a remote server at the squatted domain.*
     * Updated docker-compose requirement from 1.6.0 to 1.7.0, and on Windows/Mac, updated Docker Toolbox requirement from 1.10.0 to 1.11.0
     * A number of improvements to boinc2docker (see [ccfe9a9](https://github.com/marius311/boinc-server-docker/commit/ccfe9a9704b9282f528565c74e07ee3be698aa0d)).
-
-
-## Development and Contributing
-
-For using `boinc-server-docker` to work on development of the BOINC server source code, see the [development workflow](docs/dev-workflow.md). 
-
-There is developer documentation for `boinc-server-docker` itself, but please feel free to contact the maintainers or submit Issues and Pull Requests for this repository. 
-
-As a reminder, to modify and rebuild any of the `boinc-server-docker` images, you will need this git repository's submodules checked out (run `git submodule update --init --recursive`, or clone with `git clone --recursive` in the first place). Note also that currently building the images only works on Linux. 
