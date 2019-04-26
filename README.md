@@ -83,13 +83,13 @@ Finally, `boinc-server-docker` is not just useful to get a simple test server ru
 
 Happy crunching! 
 
-## Development and Contributing
+### Development and Contributing
 
-For using `boinc-server-docker` to work on development of the BOINC server source code, see the [development workflow](docs/dev-workflow.md). 
+If you wish to modify and rebuild any of the `boinc-server-docker` images yourself, you will need this git repository's submodules checked out. To do so, run `git submodule update --init --recursive` from the repository folder, or clone with `git clone --recursive` in the first place. Note that building these images is only necessary if you are helping with development of this package; if you wish to build your own project _using_ these base images, follow the instruction in the [cookbook](docs/cookbook.md#creating-your-own-project) instead. 
 
-There is developer documentation for `boinc-server-docker` itself, but please feel free to contact the maintainers or submit Issues and Pull Requests for this repository. 
+Currently, building the images is only guaranteed to work on Linux. Some users have reported successfully building on Windows or Mac, but this is considered experimental at this point. 
 
-As a reminder, **to modify and rebuild any of the `boinc-server-docker` images, you will need this git repository's submodules checked out** (run `git submodule update --init --recursive`, or clone with `git clone --recursive` in the first place). Note also that currently building the images only works on Linux. 
+Please feel free to contact the maintainers or submit Issues and Pull Requests for this repository if you wish to contribute! 
 
 
 ## News
