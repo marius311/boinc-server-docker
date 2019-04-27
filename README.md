@@ -94,6 +94,8 @@ Please feel free to contact the maintainers or submit Issues and Pull Requests f
 
 ## News
 
+* **Version 4.0.2** - Apr 27, 2019
+    * Based on [server_release/1.0/1.0.4](https://github.com/BOINC/boinc/releases/tag/server_release%2F1.0%2F1.0.4).
 * **Version 4.0.1** - Jan 31, 2018
     * Fix problem with mysql image-tagging which caused errors when trying to build a custom project.
 * **Version 4.0.0** - Jan 18, 2018
