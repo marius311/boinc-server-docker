@@ -95,7 +95,7 @@ Please feel free to contact the maintainers or submit Issues and Pull Requests f
 ## News
 
 * **Version 4.1.0** - Oct 20, 2019
-    * Based on [server_release/1.2/1.2](https://github.com/BOINC/boinc/releases/tag/server_release%2F1.0%2F1.0.4).
+    * Based on [server_release/1.2/1.2](https://github.com/BOINC/boinc/releases/tag/server_release%2F1.2%2F1.2.0).
 * **Version 4.0.2** - Apr 27, 2019
     * Based on [server_release/1.0/1.0.4](https://github.com/BOINC/boinc/releases/tag/server_release%2F1.0%2F1.0.4).
 * **Version 4.0.1** - Jan 31, 2018
