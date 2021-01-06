@@ -10,7 +10,7 @@ cd $PROJECT_ROOT
 echo "Updating project files in data volume..."
 
 # do variable substitution in files
-for file in config.xml html/user/schedulers.txt *.httpd.conf html/project/project.inc; do 
+for file in config.xml html/user/schedulers.txt *.httpd.conf html/ops/.htaccess html/project/project.inc; do
     sed -i -e "s|\${PROJECT}|$PROJECT|gI" \
            -e "s|REPLACE WITH PROJECT NAME|$PROJECT|gI" \
            -e "s|\${PROJECT_ROOT}|$PROJECT_ROOT|gI" \
