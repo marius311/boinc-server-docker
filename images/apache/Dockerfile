@@ -23,7 +23,7 @@ RUN apt-get update \
         supervisor \
         vim-tiny \
         wget \
-    && wget https://psysh.org/psysh -O /usr/bin/psysh \
+    && wget https://github.com/bobthecow/psysh/releases/download/v0.10.9/psysh-v0.10.9.tar.gz -O - | tar xz -C /usr/bin \
     && chmod +x /usr/bin/psysh \
     && rm -rf /var/lib/apt/lists
 
