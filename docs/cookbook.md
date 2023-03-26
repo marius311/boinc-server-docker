@@ -84,6 +84,7 @@ Before creating your real project, lets launch a sample test server to see how i
 ```bash
 git clone https://github.com/marius311/boinc-server-docker.git
 cd boinc-server-docker
+git submodule update --init --recursive
 ```
 
 and then run,
