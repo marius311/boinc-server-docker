@@ -2,7 +2,7 @@
 ARG TAG
 
 #===============================
-FROM debian:stretch-slim AS base
+FROM debian:buster-slim AS base
 #===============================
 
 LABEL maintainer="Marius Millea <mariusmillea@gmail.com>"
@@ -13,17 +13,17 @@ RUN apt-get update \
         ca-certificates \
         curl \
         dh-autoreconf \
-        g++ \ 
+        g++ \
         git \
         libcurl4-gnutls-dev \
         default-libmysqlclient-dev \
         libssl-dev \
         m4 \
         make \
-        mysql-client \
-        php7.0-cli \
-        php7.0-mysql \
-        php7.0-xml \
+        default-mysql-client \
+        php7.3-cli \
+        php7.3-mysql \
+        php7.3-xml \
         pkg-config \
         python \
         python3 \
@@ -31,7 +31,7 @@ RUN apt-get update \
         python3-mysqldb \
     && rm -rf /var/lib/apt/lists
 
-# get source and compile server 
+# get source and compile server
 COPY --chown=1000 boinc /usr/local/boinc
 RUN cd /usr/local/boinc && ./_autosetup && ./configure --disable-client --disable-manager && make
 
@@ -45,7 +45,7 @@ COPY --chown=1000 html /.project_root/html/
 COPY --chown=1000 secrets.env /run/secrets/
 
 #==============================
-FROM debian:stretch-slim AS b2d
+FROM debian:buster-slim AS b2d
 #==============================
 
 # do boinc2docker as a separate stage so we don't have to keep re-downloading
@@ -76,7 +76,7 @@ RUN apt-get update \
         wget \
     && rm -rf /var/lib/apt/lists
 
-COPY --from=b2d --chown=1000 /root/boinc2docker $HOME/boinc2docker 
+COPY --from=b2d --chown=1000 /root/boinc2docker $HOME/boinc2docker
 ENV PATH=$HOME/boinc2docker:$PATH
 
 
@@ -97,7 +97,7 @@ ONBUILD ENV BOINC_USER=$BOINC_USER \
             USER=$BOINC_USER \
             HOME=/home/$BOINC_USER \
             MYSQL_HOST=mysql
-    
+
 # set up the non-root user who compiles the server
 ONBUILD RUN adduser $BOINC_USER --disabled-password --gecos ""
 

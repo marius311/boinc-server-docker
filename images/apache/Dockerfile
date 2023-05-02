@@ -2,12 +2,12 @@
 ARG TAG
 
 #=====================================
-FROM php:7.0.31-apache-stretch AS base
+FROM php:7.3.33-apache-buster AS base
 #=====================================
 
 LABEL maintainer="Marius Millea <mariusmillea@gmail.com>"
 
-# install packages 
+# install packages
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         cron \
@@ -15,7 +15,7 @@ RUN apt-get update \
         inotify-tools \
         libjpeg62-turbo-dev \
         libpng-dev \
-        libmariadbclient18 \
+        libmariadb3 \
         nano \
         openssl \
         python \
@@ -51,9 +51,9 @@ FROM base AS base-b2d
 # install Docker client
 RUN curl -L http://get.docker.com/builds/Linux/x86_64/docker-1.10.3 > /usr/bin/docker \
     && chmod +x /usr/bin/docker
-    
-    
-    
+
+
+
 #======================
 FROM base$TAG AS apache
 #======================
